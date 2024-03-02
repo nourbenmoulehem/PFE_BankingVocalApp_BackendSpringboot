@@ -30,12 +30,6 @@ public class EmailVerificationService {
     public void sendVerificationEmail(Profile user) {
         String token = generateVerificationToken(user);
 
-
-
-
-
-        /* */
-
 //String verificationUrl = "webankAssistive://account-activation?token=" + token;
 //
 //            String emailContent = "<div style='text-align: center;'>"
@@ -43,7 +37,6 @@ public class EmailVerificationService {
 //                    + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre compte:</h3>"
 //                    + "<a href='" + verificationUrl + "'>" + verificationUrl + "</a>"
 //                    + "</div>";
-
 
 
         String verificationUrl = "http://192.168.1.3:5001/api/v1/auth/verify-email?token=" + token;
