@@ -23,22 +23,28 @@ public class Client {
     private Long clientId;
     @NaturalId
     @Digits(integer = 8, fraction = 0)
-    private Integer CIN;
-    private Date CIN_deliv_date;
-    private String CIN_front; // File path or URL to the front picture
-    private String CIN_back;  // File path or URL to the back picture
-    private String name;
-    private String last_name;
+    private Integer cin;
+    private String offer;
+    private Date dateDelivrationCin;
+    private String cinRecto; // File path or URL to the front picture
+    private String cinVerso;  // File path or URL to the back picture
+    private String selfie;  // File path or URL to the back picture
+    private String firstName;
+    private String lastName;
     @Digits(integer = 8, fraction = 0)
-    private Integer phone_number;
+    private Integer phoneNumber;
     private String gender;
-    private Date birthdate;
+    private Date birthday;
     private String nationality;
-    private String civil_status;
-    private Integer nb_children;
-    private String professional_category;
-    private String activity_field;
-    private String activity_nature;
-    private Double monthly_revenue;
+    private String statusCivil;
+    private Integer nombre_enfant;
+    private String socio_professional;
+    private String secteurActivite;
+    private String natureActivite;
+    private String revenu;
+    private String codePostal;
+    private String gouvernorat;
+    private boolean hasOtherBank;
+    private String agence;
 
 }

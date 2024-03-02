@@ -36,22 +36,28 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         var client = Client.builder()
-                .CIN(request.getCIN())
-                .CIN_deliv_date(request.getCIN_deliv_date())
-                .CIN_front(request.getCIN_front())
-                .CIN_back(request.getCIN_back())
-                .name(request.getName())
-                .last_name(request.getLast_name())
-                .phone_number(request.getPhone_number())
-                .gender(request.getGender())
-                .birthdate(request.getBirthdate())
-                .nationality(request.getNationality())
-                .civil_status(request.getCivil_status())
-                .nb_children(request.getNb_children())
-                .professional_category(request.getProfessional_category())
-                .activity_field(request.getActivity_field())
-                .activity_nature(request.getActivity_nature())
-                .monthly_revenue(request.getMonthly_revenue())
+                        .cin(request.getCin())
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .phoneNumber(request.getPhoneNumber())
+                        .offer(request.getOffer())
+                        .dateDelivrationCin(request.getDateDelivrationCin())
+                        .cinRecto(request.getCinRecto())
+                        .cinVerso(request.getCinVerso())
+                        .selfie(request.getSelfie())
+                        .gender(request.getGender())
+                        .birthday(request.getBirthday())
+                        .nationality(request.getNationality())
+                        .statusCivil(request.getStatusCivil())
+                        .nombre_enfant(request.getNombre_enfant())
+                        .socio_professional(request.getSocio_professional())
+                        .secteurActivite(request.getSecteurActivite())
+                        .natureActivite(request.getNatureActivite())
+                        .revenu(request.getRevenu())
+                        .codePostal(request.getCodePostal())
+                        .gouvernorat(request.getGouvernorat())
+                        //.hasOtherBank(request.isHasOtherBank())
+                        .agence(request.getAgence())
                 .build();
 
         // Save the Client object to the database
@@ -73,14 +79,14 @@ public class AuthenticationService {
 
         // Generate JWT tokens
         var jwtToken = jwtService.generateToken(savedUser);
-        var refreshToken = jwtService.generateRefreshToken(savedUser);
+        //var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         // Save user token
-        saveUserToken(savedUser, jwtToken);
+        //saveUserToken(savedUser, jwtToken);
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
-                .refreshToken(refreshToken)
+//                .refreshToken(refreshToken)
                 .build();
     }
 
