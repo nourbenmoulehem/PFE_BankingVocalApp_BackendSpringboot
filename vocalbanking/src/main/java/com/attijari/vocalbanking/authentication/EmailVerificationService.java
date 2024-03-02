@@ -10,7 +10,11 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import java.util.NoSuchElementException;
@@ -25,16 +29,36 @@ public class EmailVerificationService {
 
     public void sendVerificationEmail(Profile user) {
         String token = generateVerificationToken(user);
-        String verificationUrl = "http://localhost:5001/api/v1/auth/verify-email?token=" + token;
 
+
+
+
+
+        /* */
+
+//String verificationUrl = "webankAssistive://account-activation?token=" + token;
+//
+//            String emailContent = "<div style='text-align: center;'>"
+//                    + "<h1>Enregistrement à la plateforme avec succès</h1>"
+//                    + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre compte:</h3>"
+//                    + "<a href='" + verificationUrl + "'>" + verificationUrl + "</a>"
+//                    + "</div>";
+
+
+
+        String verificationUrl = "http://192.168.1.3:5001/api/v1/auth/verify-email?token=" + token;
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Enregistrement à la plateforme avec succès</h1>"
                 + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre compte:</h3>"
                 + "<a href='" + verificationUrl + "' style='display: inline-block; background-color: #FB8500; color: black; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-size: 26px; font-weight: bold; '>Vérifier</a>"
                 + "</div>";
-
         // Send the email with HTML content
-        emailSenderService.sendEmail(user.getEmail(), "Email Verification", emailContent);
+            emailSenderService.sendEmail(user.getEmail(), "Email Verification", emailContent);
+
+
+
+
+
     }
 
 
