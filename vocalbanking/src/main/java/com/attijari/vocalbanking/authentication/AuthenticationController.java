@@ -16,18 +16,42 @@ public class AuthenticationController {
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.register(request));
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        String result = authenticationService.register(request);
+        return ResponseEntity.ok(result);
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
 
     }
+    //@GetMapping("/verify-email")
+    //public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+    // emailVerificationService.verifyEmail(token);
+//        return ResponseEntity.ok("Email verified successfully");
+//    }
+
     @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+    @ResponseBody
+    public String verifyEmail(@RequestParam("token") String token) {
         emailVerificationService.verifyEmail(token);
-        return ResponseEntity.ok("Email verified successfully");
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <title>Redirecting...</title>\n" +
+                "    <script type=\"text/javascript\">\n" +
+                "        window.onload = function() {\n" +
+                "            // Replace with your deep link\n" +
+                "            var deepLink = \"webankAssistive://account-activation/" + token + "\";\n" +
+                "\n" +
+                "            window.location = deepLink;\n" +
+                "        }\n" +
+                "    </script>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    Redirecting...\n" +
+                "</body>\n" +
+                "</html>";
     }
 
     @PostMapping("/refresh-token")
