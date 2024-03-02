@@ -34,7 +34,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailVerificationService emailVerificationService; // Add EmailVerificationService dependency
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public String register(RegisterRequest request) { // AuthenticationResponse
         var client = Client.builder()
                         .cin(request.getCin())
                         .firstName(request.getFirstName())
@@ -78,16 +78,18 @@ public class AuthenticationService {
         emailVerificationService.sendVerificationEmail(savedUser);
 
         // Generate JWT tokens
-        var jwtToken = jwtService.generateToken(savedUser);
+        //var jwtToken = jwtService.generateToken(savedUser);
         //var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         // Save user token
         //saveUserToken(savedUser, jwtToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
+        //return AuthenticationResponse.builder()
+             //   .accessToken(jwtToken)
 //                .refreshToken(refreshToken)
-                .build();
+               // .build();
+
+        return user.getEmail();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
