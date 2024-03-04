@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    Optional<Client> findByCin(Integer cin);
+    Client findByCin(String cin);
 }
