@@ -21,9 +21,9 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clientId;
-    @NaturalId
-    @Digits(integer = 8, fraction = 0)
-    private Integer cin;
+//    @NaturalId
+//    @Digits(integer = 8, fraction = 0)
+    private String cin;
     private String offer;
     private Date dateDelivrationCin;
     private String cinRecto; // File path or URL to the front picture

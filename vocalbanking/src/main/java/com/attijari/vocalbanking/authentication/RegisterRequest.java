@@ -18,7 +18,7 @@ public class RegisterRequest {
     private String email;
     private String password;
     private Role role;
-    private Integer cin;
+    private String cin;
     private String offer;
     private Date dateDelivrationCin;
     private String cinRecto; // File path or URL to the front picture

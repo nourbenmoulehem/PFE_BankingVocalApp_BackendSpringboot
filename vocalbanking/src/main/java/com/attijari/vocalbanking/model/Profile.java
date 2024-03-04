@@ -32,7 +32,7 @@ public class Profile implements UserDetails {
     @OneToOne
     @JoinColumn(name = "client_id", referencedColumnName = "clientId")
     private Client client;
-    private boolean isEnabled=false;
+    private boolean isEnabled=false; // for account verification
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
