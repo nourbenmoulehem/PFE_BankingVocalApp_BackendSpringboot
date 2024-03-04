@@ -21,8 +21,8 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
-    public String extractUsername(String jwtToken) {
 
+    public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 
@@ -30,10 +30,11 @@ public class JwtService {
         final Claims claims = extractAllClaims(jwtToken);
         return claimsResolver.apply(claims);
     }
-    public String generateToken(UserDetails userDetails) {
 
+    public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
+
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
@@ -64,13 +65,12 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    private boolean isTokenExpired(String jwtToken) {
 
+    private boolean isTokenExpired(String jwtToken) {
         return extractExpiration(jwtToken).before(new Date());
     }
 
     private Date extractExpiration(String jwtToken) {
-
         return extractClaim(jwtToken, Claims::getExpiration);
     }
 
