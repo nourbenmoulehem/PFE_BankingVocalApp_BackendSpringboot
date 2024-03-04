@@ -3,6 +3,7 @@ package com.attijari.vocalbanking.authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +55,25 @@ public class AuthenticationController {
                 "</html>";
     }
 
+//    @PostMapping("/refresh-token")
+//    public void refreshToken(
+//            HttpServletRequest request,
+//            HttpServletResponse response
+//    ) throws IOException {
+//        authenticationService.refreshToken(request, response);
+//    }
+
     @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        authenticationService.refreshToken(request, response);
+    public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request,
+            HttpServletResponse response) {
+
+        try {
+            AuthenticationResponse refreshedToken = authenticationService.refreshToken(request, response);
+            return ResponseEntity.ok(refreshedToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse());
+        }
+
+
     }
 }
