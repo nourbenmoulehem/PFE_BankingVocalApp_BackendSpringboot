@@ -36,28 +36,28 @@ public class AuthenticationService {
 
     public String register(RegisterRequest request) { // AuthenticationResponse
         var client = Client.builder()
-                        .cin(request.getCin())
-                        .firstName(request.getFirstName())
-                        .lastName(request.getLastName())
-                        .phoneNumber(request.getPhoneNumber())
-                        .offer(request.getOffer())
-                        .dateDelivrationCin(request.getDateDelivrationCin())
-                        .cinRecto(request.getCinRecto())
-                        .cinVerso(request.getCinVerso())
-                        .selfie(request.getSelfie())
-                        .gender(request.getGender())
-                        .birthday(request.getBirthday())
-                        .nationality(request.getNationality())
-                        .statusCivil(request.getStatusCivil())
-                        .nombre_enfant(request.getNombre_enfant())
-                        .socio_professional(request.getSocio_professional())
-                        .secteurActivite(request.getSecteurActivite())
-                        .natureActivite(request.getNatureActivite())
-                        .revenu(request.getRevenu())
-                        .codePostal(request.getCodePostal())
-                        .gouvernorat(request.getGouvernorat())
-                        //.hasOtherBank(request.isHasOtherBank())
-                        .agence(request.getAgence())
+                .cin(request.getCin())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .phoneNumber(request.getPhoneNumber())
+                .offer(request.getOffer())
+                .dateDelivrationCin(request.getDateDelivrationCin())
+                .cinRecto(request.getCinRecto())
+                .cinVerso(request.getCinVerso())
+                .selfie(request.getSelfie())
+                .gender(request.getGender())
+                .birthday(request.getBirthday())
+                .nationality(request.getNationality())
+                .statusCivil(request.getStatusCivil())
+                .nombre_enfant(request.getNombre_enfant())
+                .socio_professional(request.getSocio_professional())
+                .secteurActivite(request.getSecteurActivite())
+                .natureActivite(request.getNatureActivite())
+                .revenu(request.getRevenu())
+                .codePostal(request.getCodePostal())
+                .gouvernorat(request.getGouvernorat())
+                //.hasOtherBank(request.isHasOtherBank())
+                .agence(request.getAgence())
                 .build();
 
         // Save the Client object to the database
@@ -85,9 +85,9 @@ public class AuthenticationService {
         //saveUserToken(savedUser, jwtToken);
 
         //return AuthenticationResponse.builder()
-             //   .accessToken(jwtToken)
+        //   .accessToken(jwtToken)
 //                .refreshToken(refreshToken)
-               // .build();
+        // .build();
 
         return user.getEmail();
     }
@@ -110,14 +110,16 @@ public class AuthenticationService {
 
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+//        revokeAllUserTokens(user);
+//        saveUserToken(user, jwtToken);
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
+
+
     private void saveUserToken(Profile user, String jwtToken) {
         var token = Token.builder()
                 .profile(user)
@@ -128,6 +130,8 @@ public class AuthenticationService {
                 .build();
         tokenRepository.save(token);
     }
+
+
     private void revokeAllUserTokens(Profile user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
@@ -138,31 +142,39 @@ public class AuthenticationService {
         });
         tokenRepository.saveAll(validUserTokens);
     }
-    public void refreshToken(
+
+
+    public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
         }
         refreshToken = authHeader.substring(7);
+        System.out.println("refreshToken: " + refreshToken);
         userEmail = jwtService.extractUsername(refreshToken);
+        System.out.println("userEmail: " + userEmail);
         if (userEmail != null) {
             var user = this.profileRepository.findByEmail(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
+//                revokeAllUserTokens(user);
+//                saveUserToken(user, accessToken);
+                return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
+            } // TODO: Handle EXPIRED refresh token
+            return null;
         }
+
     }
-}
+
+
