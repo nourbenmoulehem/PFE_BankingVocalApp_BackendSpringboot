@@ -1,5 +1,8 @@
 package com.attijari.vocalbanking.authentication;
 
+import com.attijari.vocalbanking.exceptions.ClientNotFoundException;
+import com.attijari.vocalbanking.exceptions.UserAlreadyExistsException;
+import com.attijari.vocalbanking.exceptions.UserNotFoundException;
 import com.attijari.vocalbanking.model.Client;
 import com.attijari.vocalbanking.model.Profile;
 import com.attijari.vocalbanking.model.Role;
@@ -21,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +64,10 @@ public class AuthenticationService {
                 //.hasOtherBank(request.isHasOtherBank())
                 .agence(request.getAgence())
                 .build();
+
+        if (profileRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException(request.getEmail());
+        }
 
         // Save the Client object to the database
         Client savedClient = clientRepository.save(client);
@@ -106,7 +115,7 @@ public class AuthenticationService {
         }
 
         var user = profileRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -174,6 +183,19 @@ public class AuthenticationService {
             } // TODO: Handle EXPIRED refresh token
             return null;
         }
+
+        public void forgotPassword(String email, String cin, String phoneNumber, Date birthday) {
+            var userProfile = profileRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException(email));
+            Client client = clientRepository.findByCinAndPhoneNumber(cin, phoneNumber)
+                    .orElseThrow(() -> new ClientNotFoundException(cin, phoneNumber, birthday));
+            // Send reset password email
+            System.out.println("userProfile password: " + userProfile.getPassword());
+            emailVerificationService.sendResetPasswordEmail(userProfile);
+//            emailVerificationService.sendResetPasswordEmail(userProfile, client);
+
+        }
+
 
     }
 
