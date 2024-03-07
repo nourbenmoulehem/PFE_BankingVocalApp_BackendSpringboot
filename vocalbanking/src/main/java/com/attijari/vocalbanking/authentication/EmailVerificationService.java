@@ -1,7 +1,9 @@
 package com.attijari.vocalbanking.authentication;
 
+import com.attijari.vocalbanking.model.Client;
 import com.attijari.vocalbanking.model.Profile;
 import com.attijari.vocalbanking.repository.ProfileRepository;
+import com.attijari.vocalbanking.security.JwtService;
 import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
@@ -26,6 +28,7 @@ public class EmailVerificationService {
     private final TokenRepository tokenRepository;
     private final EmailSenderService emailSenderService;
     private final ProfileRepository profileRepository;
+    private final JwtService jwtService;
 
     public void sendVerificationEmail(Profile user) {
         String token = generateVerificationToken(user);
@@ -73,6 +76,24 @@ public class EmailVerificationService {
         user.setEnabled(true); // Enable the user
         profileRepository.save(user);
         tokenRepository.delete(verificationToken); // Delete the verification token
+    }
+
+    public void sendResetPasswordEmail(Profile userProfile) {
+        String token = jwtService.generateResetPasswordToken(userProfile.getPassword());
+        String resetPasswordUrl = "http://192.168.1.3:5001/api/v1/auth/reset-password?token=" + token;
+        String emailContent = "<div style='text-align: center; '>"
+                + "<h1>Réinitialisation de mot de passe</h1>"
+                + "<h3>Veuillez appuyer sur le bouton ci-dessous pour réinitialiser votre mot de passe:</h3>"
+                + "<a href='" + resetPasswordUrl + "' style='display: inline-block; background-color: #FB8500; color: black; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-size: 26px; font-weight: bold; '>Réinitialiser</a>"
+                + "</div>";
+        emailSenderService.sendEmail(userProfile.getEmail(), "Réinitialisation de mot de passe", emailContent);
+    }
+
+
+    public void verifyResetPasswordEmail(String token) {
+        if (!jwtService.verifyToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
     }
 }
 
