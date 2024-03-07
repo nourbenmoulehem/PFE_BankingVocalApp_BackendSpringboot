@@ -26,7 +26,7 @@ public class RegisterRequest {
     private String selfie;  // File path or URL to the back picture
     private String firstName;
     private String lastName;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private String gender;
     private Date birthday;
     private String nationality;

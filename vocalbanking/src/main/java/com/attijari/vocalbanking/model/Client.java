@@ -31,8 +31,8 @@ public class Client {
     private String selfie;  // File path or URL to the back picture
     private String firstName;
     private String lastName;
-    @Digits(integer = 8, fraction = 0)
-    private Integer phoneNumber;
+//    @Digits(integer = 8, fraction = 0)
+    private String phoneNumber;
     private String gender;
     private Date birthday;
     private String nationality;
