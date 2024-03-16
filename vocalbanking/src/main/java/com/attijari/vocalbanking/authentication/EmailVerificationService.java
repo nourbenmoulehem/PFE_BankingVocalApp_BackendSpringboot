@@ -42,7 +42,7 @@ public class EmailVerificationService {
 //                    + "</div>";
 
 
-        String verificationUrl = "http://192.168.1.3:5001/api/v1/auth/verify-email?token=" + token;
+        String verificationUrl = "http://192.168.1.7:5001/api/v1/auth/verify-email?token=" + token;
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Enregistrement à la plateforme avec succès</h1>"
                 + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre compte:</h3>"
@@ -80,7 +80,7 @@ public class EmailVerificationService {
 
     public void sendResetPasswordEmail(Profile userProfile) {
         String token = jwtService.generateResetPasswordToken(userProfile.getPassword());
-        String resetPasswordUrl = "http://192.168.1.3:5001/api/v1/auth/reset-password?token=" + token;
+        String resetPasswordUrl = "http://192.168.1.7:5001/api/v1/auth/reset-password?token=" + token;
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Réinitialisation de mot de passe</h1>"
                 + "<h3>Veuillez appuyer sur le bouton ci-dessous pour réinitialiser votre mot de passe:</h3>"
