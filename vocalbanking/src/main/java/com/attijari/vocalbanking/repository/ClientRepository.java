@@ -12,4 +12,5 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Client findByCin(String cin);
 
     Optional<Client> findByCinAndPhoneNumber(String cin, String phoneNumber);
+
 }
