@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.authentication;
 
+import com.attijari.vocalbanking.exceptions.CinAlreadyExistsException;
 import com.attijari.vocalbanking.exceptions.ClientNotFoundException;
 import com.attijari.vocalbanking.exceptions.UserAlreadyExistsException;
 import com.attijari.vocalbanking.exceptions.UserNotFoundException;
@@ -67,6 +68,10 @@ public class AuthenticationService {
 
         if (profileRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(request.getEmail());
+        }
+
+        if(clientRepository.findByCin(request.getCin()) != null) {
+            throw new CinAlreadyExistsException(request.getCin());
         }
 
         // Save the Client object to the database

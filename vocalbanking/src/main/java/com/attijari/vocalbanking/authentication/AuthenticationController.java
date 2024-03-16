@@ -1,8 +1,10 @@
 package com.attijari.vocalbanking.authentication;
 
+import com.attijari.vocalbanking.exceptions.CinAlreadyExistsException;
 import com.attijari.vocalbanking.exceptions.ClientNotFoundException;
 import com.attijari.vocalbanking.exceptions.UserAlreadyExistsException;
 import com.attijari.vocalbanking.exceptions.UserNotFoundException;
+import com.attijari.vocalbanking.model.Client;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +32,14 @@ public class AuthenticationController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             String result = authenticationService.register(request);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok("Inscription réussie. Vérifiez votre email pour valider votre compte avant de vous connecter. ✅");
         } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists: " + e.getMessage());
+            System.out.println("L'utilisateur avec cet e-mail existe déjà: ");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur avec cet e-mail existe déjà: " + e.getMessage());
+        } catch (CinAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur avec ce CIN existe déjà.: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard: " + e.getMessage());
         }
     }
 
@@ -51,11 +56,11 @@ public class AuthenticationController {
             AuthenticationResponse response = authenticationService.authenticate(request);
             return ResponseEntity.ok(response);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Échec de l'authentification: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard: " + e.getMessage());
         }
     }
 
