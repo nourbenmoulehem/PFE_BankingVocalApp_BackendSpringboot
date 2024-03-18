@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.security;
 
+import com.attijari.vocalbanking.exceptions.TokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -82,24 +83,28 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateResetPasswordToken(String username) { // generate a token for reset password
+    public String generateResetPasswordToken(String password, String email) { // generate a token for reset password
         return Jwts.builder()
-                .setSubject(username)
+                .claim("password", password)
+                .claim("email", email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))  // set token expiration as 10 hours
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    public boolean verifyToken(String token) { // verify the token reset password
+    public Jws<Claims> verifyToken(String token) { // verify the token reset password
         try {
+            System.out.println("HELOOOO: " + token);
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(getSignInKey())
                     .build()
                     .parseClaimsJws(token);
-            return true;
-        } catch (SignatureException e) {
+            System.out.println("CLAIMS: " + claims);
+            return claims;
+        }
+        catch (SignatureException e) {
             // log the exception
-            return false;
+            return null;
         }
     }
 
