@@ -40,5 +40,6 @@ public class RegisterRequest {
     private String gouvernorat;
     //private boolean hasOtherBank;
     private String agence;
+    private String adresse;
 
 }

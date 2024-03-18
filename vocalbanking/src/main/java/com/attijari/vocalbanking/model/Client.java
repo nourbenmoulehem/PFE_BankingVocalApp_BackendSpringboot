@@ -46,5 +46,6 @@ public class Client {
     private String gouvernorat;
     private boolean hasOtherBank;
     private String agence;
+    private String adresse;
 
 }
