@@ -79,7 +79,8 @@ public class EmailVerificationService {
     }
 
     public void sendResetPasswordEmail(Profile userProfile) {
-        String token = jwtService.generateResetPasswordToken(userProfile.getPassword());
+        // sending the old encrypted password and the email in the token
+        String token = jwtService.generateResetPasswordToken(userProfile.getPassword(), userProfile.getEmail());
         String resetPasswordUrl = "http://192.168.1.7:5001/api/v1/auth/reset-password?token=" + token;
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Réinitialisation de mot de passe</h1>"
@@ -91,7 +92,7 @@ public class EmailVerificationService {
 
 
     public void verifyResetPasswordEmail(String token) {
-        if (!jwtService.verifyToken(token)) {
+        if (jwtService.verifyToken(token) == null) {
             throw new RuntimeException("Invalid token");
         }
     }

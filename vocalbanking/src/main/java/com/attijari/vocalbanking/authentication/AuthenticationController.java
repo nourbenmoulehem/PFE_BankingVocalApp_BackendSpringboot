@@ -1,9 +1,6 @@
 package com.attijari.vocalbanking.authentication;
 
-import com.attijari.vocalbanking.exceptions.CinAlreadyExistsException;
-import com.attijari.vocalbanking.exceptions.ClientNotFoundException;
-import com.attijari.vocalbanking.exceptions.UserAlreadyExistsException;
-import com.attijari.vocalbanking.exceptions.UserNotFoundException;
+import com.attijari.vocalbanking.exceptions.*;
 import com.attijari.vocalbanking.model.Client;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -145,7 +142,27 @@ public class AuthenticationController {
         String phoneNumber = request.getPhoneNumber();
         Date birthday = request.getBirthday();
         authenticationService.forgotPassword(email, cin, phoneNumber, birthday);
-        return ResponseEntity.ok("Email sent successfully");
+        return ResponseEntity.ok("L'email pour réinitialiser Votre mot de passe a été envoyé avec succès");
+    }
+
+    @PostMapping("/new-password")
+    public ResponseEntity<String> newPassword(@RequestBody NewPasswordRequest request) {
+//        String token = request.getToken();
+//        String newPassword = request.getNewPassword();
+
+        try {
+            authenticationService.newPassword(request);
+            return ResponseEntity.ok("Mot de passe modifié avec succès");
+       }
+        catch (TokenExpiredException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+        catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
+        }
     }
 }
 

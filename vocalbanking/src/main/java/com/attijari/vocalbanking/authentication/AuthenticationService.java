@@ -1,9 +1,6 @@
 package com.attijari.vocalbanking.authentication;
 
-import com.attijari.vocalbanking.exceptions.CinAlreadyExistsException;
-import com.attijari.vocalbanking.exceptions.ClientNotFoundException;
-import com.attijari.vocalbanking.exceptions.UserAlreadyExistsException;
-import com.attijari.vocalbanking.exceptions.UserNotFoundException;
+import com.attijari.vocalbanking.exceptions.*;
 import com.attijari.vocalbanking.model.Client;
 import com.attijari.vocalbanking.model.Profile;
 import com.attijari.vocalbanking.model.Role;
@@ -14,6 +11,8 @@ import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -199,8 +198,35 @@ public class AuthenticationService {
             emailVerificationService.sendResetPasswordEmail(userProfile);
 //            emailVerificationService.sendResetPasswordEmail(userProfile, client);
 
+
+
         }
 
+        public void newPassword(NewPasswordRequest request) {
+
+        /* todo:
+         1. Get the user profile from the token
+            2. check if the token is expired
+            3. check if the profile is enabled
+            4. reset the password
+         */
+
+            // TODO: verify the token
+            String token = request.getToken();
+            System.out.println("Token: " + token);
+            Jws<Claims> isTokenValid = jwtService.verifyToken(token);
+            if(isTokenValid == null) { // throw exception if the token isn't valid
+                throw new TokenExpiredException();
+            }
+
+            // get profile by the email in the token
+            Profile profile = profileRepository.findByEmail(isTokenValid.getBody().get("email").toString())
+                    .orElseThrow(() -> new UserNotFoundException(isTokenValid.getBody().get("email").toString()));
+
+            // reset the password
+            profile.setPassword(passwordEncoder.encode(request.getPassword()));
+            profileRepository.save(profile);
+        }
 
     }
 
