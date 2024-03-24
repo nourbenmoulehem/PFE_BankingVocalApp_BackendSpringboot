@@ -1,5 +1,10 @@
 package com.attijari.vocalbanking.CompteBancaire;
 
+import com.attijari.vocalbanking.Carte.Carte;
+import com.attijari.vocalbanking.Client.Client;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Data
@@ -15,15 +21,23 @@ import java.util.concurrent.ThreadLocalRandom;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class CompteBancaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_Compte;
+    @Column(name = "id_compteBancaire")
+    private int id_compteBancaire;
     @Column(unique = true)
     private String RIB;
     private float solde;
     private Date date_ouverture;
-    // @OneToOne // one-to-one relationship with Client
+//    @JsonManagedReference // This is used to avoid infinite recursion
+    @OneToOne(mappedBy = "compteBancaire")
+    private Client client;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_produit", referencedColumnName = "id_produit")
+    private Carte carte;
 
 
 
@@ -31,14 +45,19 @@ public class CompteBancaire {
     @PrePersist
     public void prePersist() {
         this.date_ouverture = new Date();
-        this.RIB = generateUniqueNumber();
+        this.RIB = generateRib();
     }
 
-    private String generateUniqueNumber() {
-        long min = (long) Math.pow(10, 19); // minimum value for 20-digit number
-        long max = (long) Math.pow(10, 20) - 1; // maximum value for 20-digit number
-        long randomNum = ThreadLocalRandom.current().nextLong(min, max);
-        return String.format("%020d", randomNum); // format as 20-digit string
+    public static String generateRib() {
+        String BANK_IDENTIFIER = "0409";
+        // Generate 17 random digits
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 18; i++) {
+            sb.append(random.nextInt(10)); // Generates a random digit (0-9)
+        }
+        // Concatenate bank identifier with the random digits
+        return BANK_IDENTIFIER + sb.toString();
     }
 
 }
