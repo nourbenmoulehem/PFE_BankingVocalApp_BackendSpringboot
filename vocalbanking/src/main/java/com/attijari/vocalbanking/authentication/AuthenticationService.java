@@ -1,16 +1,15 @@
 package com.attijari.vocalbanking.authentication;
 
 import com.attijari.vocalbanking.exceptions.*;
-import com.attijari.vocalbanking.model.Client;
-import com.attijari.vocalbanking.model.Profile;
-import com.attijari.vocalbanking.model.Role;
-import com.attijari.vocalbanking.repository.ClientRepository;
-import com.attijari.vocalbanking.repository.ProfileRepository;
+import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Profile.Profile;
+import com.attijari.vocalbanking.Profile.Role;
+import com.attijari.vocalbanking.Client.ClientRepository;
+import com.attijari.vocalbanking.Profile.ProfileRepository;
 import com.attijari.vocalbanking.security.JwtService;
 import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

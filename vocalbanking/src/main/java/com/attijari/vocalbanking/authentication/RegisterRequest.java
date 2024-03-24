@@ -1,7 +1,6 @@
 package com.attijari.vocalbanking.authentication;
 
-import com.attijari.vocalbanking.model.Role;
-import jakarta.validation.constraints.Digits;
+import com.attijari.vocalbanking.Profile.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

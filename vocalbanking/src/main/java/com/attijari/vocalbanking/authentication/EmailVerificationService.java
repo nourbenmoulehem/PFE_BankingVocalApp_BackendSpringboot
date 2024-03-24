@@ -1,25 +1,19 @@
 package com.attijari.vocalbanking.authentication;
 
-import com.attijari.vocalbanking.model.Client;
-import com.attijari.vocalbanking.model.Profile;
-import com.attijari.vocalbanking.repository.ProfileRepository;
+import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
+import com.attijari.vocalbanking.Profile.Profile;
+import com.attijari.vocalbanking.Profile.ProfileRepository;
 import com.attijari.vocalbanking.security.JwtService;
 import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +22,7 @@ public class EmailVerificationService {
     private final TokenRepository tokenRepository;
     private final EmailSenderService emailSenderService;
     private final ProfileRepository profileRepository;
+    private final CompteBancaireRepository compteBancaireRepository;
     private final JwtService jwtService;
 
     public void sendVerificationEmail(Profile user) {
@@ -69,12 +64,30 @@ public class EmailVerificationService {
         return token;
     }
 
+//    public String generateUniqueRIB() {
+//        String rib;
+//        do {
+//            long min = (long) Math.pow(10, 22);
+//            long max = (long) Math.pow(10, 23) - 1;
+//            long randomNum = ThreadLocalRandom.current().nextLong(min, max);
+//            rib = String.valueOf(randomNum);
+//        } while(compteBancaireRepository.existsByRIB(rib));
+//        return rib;
+//    }
+
     public void verifyEmail(String token) {
         Token verificationToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new NoSuchElementException("Invalid verification token"));
         Profile user = verificationToken.getProfile();
         user.setEnabled(true); // Enable the user
         profileRepository.save(user);
+        // TODO: create compte bancaire with unique RIB
+//        compteBancaireRepository.save(com.attijari.vocalbanking.CompteBancaire.CompteBancaire.builder()
+//                .RIB(generateUniqueRIB())
+//                .solde(0)
+//                .profile(user)
+//                .build());
+        // TODO: create carte bancaire
         tokenRepository.delete(verificationToken); // Delete the verification token
     }
 
