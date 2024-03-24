@@ -1,6 +1,6 @@
 package com.attijari.vocalbanking.token;
 
-import com.attijari.vocalbanking.model.Profile;
+import com.attijari.vocalbanking.Profile.Profile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

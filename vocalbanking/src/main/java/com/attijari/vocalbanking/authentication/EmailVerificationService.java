@@ -1,37 +1,44 @@
 package com.attijari.vocalbanking.authentication;
 
-import com.attijari.vocalbanking.model.Client;
-import com.attijari.vocalbanking.model.Profile;
-import com.attijari.vocalbanking.repository.ProfileRepository;
+import com.attijari.vocalbanking.Carte.Carte;
+import com.attijari.vocalbanking.Carte.CarteRepository;
+import com.attijari.vocalbanking.Carte.CodeOffre;
+import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Client.ClientRepository;
+import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
+import com.attijari.vocalbanking.Profile.Profile;
+import com.attijari.vocalbanking.Profile.ProfileRepository;
+import com.attijari.vocalbanking.exceptions.TokenExpiredException;
+import com.attijari.vocalbanking.exceptions.UserNotFoundException;
 import com.attijari.vocalbanking.security.JwtService;
 import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private final TokenRepository tokenRepository;
     private final EmailSenderService emailSenderService;
     private final ProfileRepository profileRepository;
+    private final ClientRepository clientRepository;
+    private final CompteBancaireRepository compteBancaireRepository;
+    private final CarteRepository carteRepository;
     private final JwtService jwtService;
 
     public void sendVerificationEmail(Profile user) {
-        String token = generateVerificationToken(user);
+        String token = jwtService.generateEmailVerificationToken(user.getEmail());
+
 
 //String verificationUrl = "webankAssistive://account-activation?token=" + token;
 //
@@ -58,24 +65,90 @@ public class EmailVerificationService {
     }
 
 
-    private String generateVerificationToken(Profile user) {
-        String token = UUID.randomUUID().toString();
-        Token verificationToken = Token.builder()
-                .token(token)
-                .tokenType(TokenType.EMAIL_VERIFICATION)
-                .profile(user)
-                .build();
-        tokenRepository.save(verificationToken);
-        return token;
-    }
+//    private String generateVerificationToken(Profile user) {
+//        String token = UUID.randomUUID().toString();
+//        Token verificationToken = Token.builder()
+//                .token(token)
+//                .tokenType(TokenType.EMAIL_VERIFICATION)
+//                .profile(user)
+//                .build();
+//        tokenRepository.save(verificationToken);
+//        return token;
+//    }
+
+//    public String generateUniqueRIB() {
+//        String rib;
+//        do {
+//            long min = (long) Math.pow(10, 22);
+//            long max = (long) Math.pow(10, 23) - 1;
+//            long randomNum = ThreadLocalRandom.current().nextLong(min, max);
+//            rib = String.valueOf(randomNum);
+//        } while(compteBancaireRepository.existsByRIB(rib));
+//        return rib;
+//    }
 
     public void verifyEmail(String token) {
-        Token verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new NoSuchElementException("Invalid verification token"));
-        Profile user = verificationToken.getProfile();
-        user.setEnabled(true); // Enable the user
-        profileRepository.save(user);
-        tokenRepository.delete(verificationToken); // Delete the verification token
+        // TODO: delete the old verification token and add a jwt verification token
+//        Token verificationToken = tokenRepository.findByToken(token)
+//                .orElseThrow(() -> new NoSuchElementException("Invalid verification token"));
+        //        Profile user = verificationToken.getProfile();
+//        tokenRepository.delete(verificationToken); // Delete the verification token
+
+        // IN PRODUCTION: verify the token
+        Jws<Claims> isTokenValid = jwtService.verifyToken(token);
+        if(isTokenValid == null) { // throw exception if the token isn't valid
+            System.out.println("Token is invalid");
+            throw new TokenExpiredException();
+        }
+
+
+        Profile profile = profileRepository.findByEmail(isTokenValid.getBody().get("email").toString())
+                .orElseThrow(() -> new UserNotFoundException(isTokenValid.getBody().get("email").toString()));
+
+//         Check if the user is already verified, we need to prevent the user from verifying the email multiple times
+        if(profile.isEnabled()) {
+            throw new IllegalStateException("Email already verified");
+        }
+
+        // ******* Set isEnabled to true ********
+        profile.setEnabled(true); // Enable the user
+        profileRepository.save(profile);
+
+        System.out.println("Client: " + profile.getClient());
+        Client client = profile.getClient();
+
+        // TODO: create compte bancaire with unique RIB
+        CompteBancaire compteBancaire = CompteBancaire.builder() // building the compte bancaire
+                .solde(0)
+                .client(client)
+                .build();
+
+        System.out.println("Compte bancaire: " + compteBancaire);
+        System.out.println("Client from compteBancaire: " + compteBancaire.getClient());
+
+
+        // set the new compte bancaire to the client
+        client.setCompteBancaire(compteBancaire);
+
+//        System.out.println("Client: " + client); //this will cause an error cause by @Data annotation so either remove @Data and replkace with @GETTER and @SETTER or use @ToString annotation and excluding compteBancaire (current solution)
+
+
+        // TODO: create carte bancaire
+        Carte carte = Carte.builder()
+                .compteBancaire(compteBancaire)
+                .code_offre(String.valueOf(CodeOffre.CODE_003.getCode()))
+                .status("active")
+                .build();
+
+        // set the new carte to the compte bancaire
+        compteBancaire.setCarte(carte);
+
+        // todo save carte then compte bancaire and lastly client
+        carteRepository.save(carte);
+        compteBancaireRepository.save(compteBancaire);
+        clientRepository.save(client);
+
+
     }
 
     public void sendResetPasswordEmail(Profile userProfile) {
@@ -93,7 +166,7 @@ public class EmailVerificationService {
 
     public void verifyResetPasswordEmail(String token) {
         if (jwtService.verifyToken(token) == null) {
-            throw new RuntimeException("Invalid token");
+            throw new TokenExpiredException();
         }
     }
 }

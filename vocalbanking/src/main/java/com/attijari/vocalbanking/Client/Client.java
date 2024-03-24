@@ -1,22 +1,23 @@
-package com.attijari.vocalbanking.model;
+package com.attijari.vocalbanking.Client;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.NaturalId;
 import java.util.*;
 
 @Data
+@ToString(exclude = "compteBancaire") // including compteBancaire will cause infinite recursion loop, so either exclude it or idk
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id") // This is used to avoid infinite recursion
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +48,10 @@ public class Client {
     private boolean hasOtherBank;
     private String agence;
     private String adresse;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JsonBackReference // This is used to avoid infinite recursion
+    @JoinColumn(name = "id_compteBancaire", referencedColumnName = "id_compteBancaire")  // This means Foreign key will be created only in the Client table i.e. extra column 'id_CompteBancaire' will be created in the Client table
+    private CompteBancaire compteBancaire;
 
 }

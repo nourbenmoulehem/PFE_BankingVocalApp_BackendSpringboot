@@ -1,9 +1,9 @@
-package com.attijari.vocalbanking.service;
+package com.attijari.vocalbanking.Client;
 
-import com.attijari.vocalbanking.model.Client;
+import com.attijari.vocalbanking.Client.Client;
 import lombok.*;
 import org.springframework.stereotype.Service;
-import com.attijari.vocalbanking.repository.ClientRepository;
+import com.attijari.vocalbanking.Client.ClientRepository;
 
 import java.util.List;
 

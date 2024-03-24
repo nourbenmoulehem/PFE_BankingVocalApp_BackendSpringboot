@@ -1,5 +1,6 @@
-package com.attijari.vocalbanking.model;
+package com.attijari.vocalbanking.Profile;
 
+import com.attijari.vocalbanking.Client.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
