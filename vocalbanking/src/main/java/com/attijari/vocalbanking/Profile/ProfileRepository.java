@@ -1,6 +1,6 @@
-package com.attijari.vocalbanking.repository;
+package com.attijari.vocalbanking.Profile;
 
-import com.attijari.vocalbanking.model.Profile;
+import com.attijari.vocalbanking.Profile.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

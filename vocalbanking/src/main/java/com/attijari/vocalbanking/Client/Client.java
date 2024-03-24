@@ -1,4 +1,4 @@
-package com.attijari.vocalbanking.model;
+package com.attijari.vocalbanking.Client;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
