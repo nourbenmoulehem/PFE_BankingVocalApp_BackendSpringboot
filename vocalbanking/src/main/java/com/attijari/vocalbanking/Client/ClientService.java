@@ -1,4 +1,4 @@
-package com.attijari.vocalbanking.service;
+package com.attijari.vocalbanking.Client;
 
 import com.attijari.vocalbanking.Client.Client;
 import lombok.*;
