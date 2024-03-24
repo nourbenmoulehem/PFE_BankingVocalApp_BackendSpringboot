@@ -1,5 +1,11 @@
 package com.attijari.vocalbanking.authentication;
 
+import com.attijari.vocalbanking.Carte.Carte;
+import com.attijari.vocalbanking.Carte.CarteRepository;
+import com.attijari.vocalbanking.Carte.CodeOffre;
+import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Client.ClientRepository;
+import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.Profile.Profile;
 import com.attijari.vocalbanking.Profile.ProfileRepository;
@@ -23,10 +29,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private final TokenRepository tokenRepository;
     private final EmailSenderService emailSenderService;
     private final ProfileRepository profileRepository;
+    private final ClientRepository clientRepository;
     private final CompteBancaireRepository compteBancaireRepository;
+    private final CarteRepository carteRepository;
     private final JwtService jwtService;
 
     public void sendVerificationEmail(Profile user) {
@@ -98,16 +105,49 @@ public class EmailVerificationService {
         Profile profile = profileRepository.findByEmail(isTokenValid.getBody().get("email").toString())
                 .orElseThrow(() -> new UserNotFoundException(isTokenValid.getBody().get("email").toString()));
 
-        System.out.println("profile: " + profile);
+//         Check if the user is already verified, we need to prevent the user from verifying the email multiple times
+        if(profile.isEnabled()) {
+            throw new IllegalStateException("Email already verified");
+        }
+
+        // ******* Set isEnabled to true ********
         profile.setEnabled(true); // Enable the user
         profileRepository.save(profile);
+
+        System.out.println("Client: " + profile.getClient());
+        Client client = profile.getClient();
+
         // TODO: create compte bancaire with unique RIB
-//        compteBancaireRepository.save(com.attijari.vocalbanking.CompteBancaire.CompteBancaire.builder()
-//                .RIB(generateUniqueRIB())
-//                .solde(0)
-//                .profile(user)
-//                .build());
+        CompteBancaire compteBancaire = CompteBancaire.builder() // building the compte bancaire
+                .solde(0)
+                .client(client)
+                .build();
+
+        System.out.println("Compte bancaire: " + compteBancaire);
+        System.out.println("Client from compteBancaire: " + compteBancaire.getClient());
+
+
+        // set the new compte bancaire to the client
+        client.setCompteBancaire(compteBancaire);
+
+//        System.out.println("Client: " + client); //this will cause an error cause by @Data annotation so either remove @Data and replkace with @GETTER and @SETTER or use @ToString annotation and excluding compteBancaire (current solution)
+
+
         // TODO: create carte bancaire
+        Carte carte = Carte.builder()
+                .compteBancaire(compteBancaire)
+                .code_offre(String.valueOf(CodeOffre.CODE_003.getCode()))
+                .status("active")
+                .build();
+
+        // set the new carte to the compte bancaire
+        compteBancaire.setCarte(carte);
+
+        // todo save carte then compte bancaire and lastly client
+        carteRepository.save(carte);
+        compteBancaireRepository.save(compteBancaire);
+        clientRepository.save(client);
+
 
     }
 
