@@ -104,6 +104,23 @@ public class AuthenticationController {
                     "    <div class=\"expired-message\">Le jeton a expiré</div>\n" +
                     "</body>\n" +
                     "</html>";
+        } catch (IllegalStateException e) {
+            return "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <title>Token Expired</title>\n" +
+                    "    <style>\n" +
+                    "        .expired-message {\n" +
+                    "            font-size: 100px;\n" +
+                    "            color: green;\n" +
+                    "            text-align: center;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    <div class=\"expired-message\"> Votre compte a déjà été vérifié. 👍 </div>\n" +
+                    "</body>\n" +
+                    "</html>";
         }
 
     }
