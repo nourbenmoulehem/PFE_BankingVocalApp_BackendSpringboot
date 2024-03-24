@@ -3,10 +3,14 @@ package com.attijari.vocalbanking.authentication;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.Profile.Profile;
 import com.attijari.vocalbanking.Profile.ProfileRepository;
+import com.attijari.vocalbanking.exceptions.TokenExpiredException;
+import com.attijari.vocalbanking.exceptions.UserNotFoundException;
 import com.attijari.vocalbanking.security.JwtService;
 import com.attijari.vocalbanking.token.Token;
 import com.attijari.vocalbanking.token.TokenRepository;
 import com.attijari.vocalbanking.token.TokenType;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +30,8 @@ public class EmailVerificationService {
     private final JwtService jwtService;
 
     public void sendVerificationEmail(Profile user) {
-        String token = generateVerificationToken(user);
+        String token = jwtService.generateEmailVerificationToken(user.getEmail());
+
 
 //String verificationUrl = "webankAssistive://account-activation?token=" + token;
 //
@@ -53,16 +58,16 @@ public class EmailVerificationService {
     }
 
 
-    private String generateVerificationToken(Profile user) {
-        String token = UUID.randomUUID().toString();
-        Token verificationToken = Token.builder()
-                .token(token)
-                .tokenType(TokenType.EMAIL_VERIFICATION)
-                .profile(user)
-                .build();
-        tokenRepository.save(verificationToken);
-        return token;
-    }
+//    private String generateVerificationToken(Profile user) {
+//        String token = UUID.randomUUID().toString();
+//        Token verificationToken = Token.builder()
+//                .token(token)
+//                .tokenType(TokenType.EMAIL_VERIFICATION)
+//                .profile(user)
+//                .build();
+//        tokenRepository.save(verificationToken);
+//        return token;
+//    }
 
 //    public String generateUniqueRIB() {
 //        String rib;
@@ -76,11 +81,26 @@ public class EmailVerificationService {
 //    }
 
     public void verifyEmail(String token) {
-        Token verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new NoSuchElementException("Invalid verification token"));
-        Profile user = verificationToken.getProfile();
-        user.setEnabled(true); // Enable the user
-        profileRepository.save(user);
+        // TODO: delete the old verification token and add a jwt verification token
+//        Token verificationToken = tokenRepository.findByToken(token)
+//                .orElseThrow(() -> new NoSuchElementException("Invalid verification token"));
+        //        Profile user = verificationToken.getProfile();
+//        tokenRepository.delete(verificationToken); // Delete the verification token
+
+        // IN PRODUCTION: verify the token
+        Jws<Claims> isTokenValid = jwtService.verifyToken(token);
+        if(isTokenValid == null) { // throw exception if the token isn't valid
+            System.out.println("Token is invalid");
+            throw new TokenExpiredException();
+        }
+
+
+        Profile profile = profileRepository.findByEmail(isTokenValid.getBody().get("email").toString())
+                .orElseThrow(() -> new UserNotFoundException(isTokenValid.getBody().get("email").toString()));
+
+        System.out.println("profile: " + profile);
+        profile.setEnabled(true); // Enable the user
+        profileRepository.save(profile);
         // TODO: create compte bancaire with unique RIB
 //        compteBancaireRepository.save(com.attijari.vocalbanking.CompteBancaire.CompteBancaire.builder()
 //                .RIB(generateUniqueRIB())
@@ -88,7 +108,7 @@ public class EmailVerificationService {
 //                .profile(user)
 //                .build());
         // TODO: create carte bancaire
-        tokenRepository.delete(verificationToken); // Delete the verification token
+
     }
 
     public void sendResetPasswordEmail(Profile userProfile) {
@@ -106,7 +126,7 @@ public class EmailVerificationService {
 
     public void verifyResetPasswordEmail(String token) {
         if (jwtService.verifyToken(token) == null) {
-            throw new RuntimeException("Invalid token");
+            throw new TokenExpiredException();
         }
     }
 }

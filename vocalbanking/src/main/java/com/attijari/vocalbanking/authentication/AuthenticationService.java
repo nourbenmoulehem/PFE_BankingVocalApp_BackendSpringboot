@@ -214,6 +214,7 @@ public class AuthenticationService {
             System.out.println("Token: " + token);
             Jws<Claims> isTokenValid = jwtService.verifyToken(token);
             if(isTokenValid == null) { // throw exception if the token isn't valid
+                System.out.println("Token is invalid");
                 throw new TokenExpiredException();
             }
 

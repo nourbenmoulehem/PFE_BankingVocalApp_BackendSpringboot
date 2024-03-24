@@ -88,10 +88,20 @@ public class JwtService {
                 .claim("password", password)
                 .claim("email", email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))  // set token expiration as 10 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 3))  // set token expiration as 10 hours
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public String generateEmailVerificationToken(String email) { // generate a token for reset password
+        return Jwts.builder()
+                .claim("email", email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))  // set token expiration as 3 hours
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public Jws<Claims> verifyToken(String token) { // verify the token reset password
         try {
             System.out.println("HELOOOO: " + token);
@@ -101,9 +111,14 @@ public class JwtService {
                     .parseClaimsJws(token);
             System.out.println("CLAIMS: " + claims);
             return claims;
+        } catch (ExpiredJwtException ex) {
+            // Handle token expiration
+            System.out.println("Token expired HELLO: " + ex.getMessage());
+            return null;
         }
         catch (SignatureException e) {
             // log the exception
+            System.out.println("Invalid JWT signature: " + e.getMessage());
             return null;
         }
     }

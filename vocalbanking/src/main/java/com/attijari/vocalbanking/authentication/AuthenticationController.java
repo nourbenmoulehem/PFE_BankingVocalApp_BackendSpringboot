@@ -68,47 +68,89 @@ public class AuthenticationController {
     @GetMapping("/verify-email")
     @ResponseBody
     public String verifyEmail(@RequestParam("token") String token) {
-        emailVerificationService.verifyEmail(token);
-        return "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <title>Redirecting...</title>\n" +
-                "    <script type=\"text/javascript\">\n" +
-                "        window.onload = function() {\n" +
-                "            // Replace with your deep link\n" +
-                "            var deepLink = \"webankAssistive://account-activation/" + token + "\";\n" +
-                "\n" +
-                "            window.location = deepLink;\n" +
-                "        }\n" +
-                "    </script>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    Redirecting...\n" +
-                "</body>\n" +
-                "</html>";
+        try{
+            emailVerificationService.verifyEmail(token);
+            return "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <title>Redirecting...</title>\n" +
+                    "    <script type=\"text/javascript\">\n" +
+                    "        window.onload = function() {\n" +
+                    "            // Replace with your deep link\n" +
+                    "            var deepLink = \"webankAssistive://account-activation/" + token + "\";\n" +
+                    "\n" +
+                    "            window.location = deepLink;\n" +
+                    "        }\n" +
+                    "    </script>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    Redirecting...\n" +
+                    "</body>\n" +
+                    "</html>";
+        } catch (TokenExpiredException e) {
+            return "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <title>Token Expired</title>\n" +
+                    "    <style>\n" +
+                    "        .expired-message {\n" +
+                    "            font-size: 150px;\n" +
+                    "            color: red;\n" +
+                    "            text-align: center;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    <div class=\"expired-message\">Le jeton a expiré</div>\n" +
+                    "</body>\n" +
+                    "</html>";
+        }
+
     }
 
     @GetMapping("/reset-password")
     @ResponseBody
     public String newPassword(@RequestParam("token") String token) {
-        emailVerificationService.verifyResetPasswordEmail(token);
-        return "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <title>Redirecting...</title>\n" +
-                "    <script type=\"text/javascript\">\n" +
-                "        window.onload = function() {\n" +
-                "            // Replace with your deep link\n" +
-                "            var deepLink = \"webankAssistive://create-new-password/" + token + "\";\n" +
-                "\n" +
-                "            window.location = deepLink;\n" +
-                "        }\n" +
-                "    </script>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    Redirecting...\n" +
-                "</body>\n" +
-                "</html>";
+        try {
+            emailVerificationService.verifyResetPasswordEmail(token);
+            return "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <title>Redirecting...</title>\n" +
+                    "    <script type=\"text/javascript\">\n" +
+                    "        window.onload = function() {\n" +
+                    "            // Replace with your deep link\n" +
+                    "            var deepLink = \"webankAssistive://create-new-password/" + token + "\";\n" +
+                    "\n" +
+                    "            window.location = deepLink;\n" +
+                    "        }\n" +
+                    "    </script>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    Redirecting...\n" +
+                    "</body>\n" +
+                    "</html>";
+
+        }
+        catch (TokenExpiredException e) {
+            return "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <title>Token Expired</title>\n" +
+                    "    <style>\n" +
+                    "        .expired-message {\n" +
+                    "            font-size: 150px;\n" +
+                    "            color: red;\n" +
+                    "            text-align: center;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    <div class=\"expired-message\">Le jeton a expiré</div>\n" +
+                    "</body>\n" +
+                    "</html>";
+        }
+
     }
 
 //    @PostMapping("/refresh-token")
@@ -153,7 +195,8 @@ public class AuthenticationController {
             return ResponseEntity.ok("Mot de passe modifié avec succès");
        }
         catch (TokenExpiredException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            System.out.println("Le jeton a expiré: ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("LE JETON A EXPIRÉ. Veuillez réessayer en demandant un nouveau lien de réinitialisation de mot de passe.");
         }
         catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
@@ -164,17 +207,3 @@ public class AuthenticationController {
     }
 }
 
-/*
-try {
-        authenticationService.forgotPassword(email, cin, phoneNumber, birthday);
-            return ResponseEntity.ok("Email sent successfully");
-        } catch (
-UserNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + e.getMessage());
-        } catch (
-ClientNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found: " + e.getMessage());
-        } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
-        }
- */
