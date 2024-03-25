@@ -136,7 +136,7 @@ public class EmailVerificationService {
         // TODO: create carte bancaire
         Carte carte = Carte.builder()
                 .compteBancaire(compteBancaire)
-                .code_offre(String.valueOf(CodeOffre.CODE_003.getCode()))
+                .code_offre(CodeOffre.CODE_003)
                 .status("active")
                 .build();
 
