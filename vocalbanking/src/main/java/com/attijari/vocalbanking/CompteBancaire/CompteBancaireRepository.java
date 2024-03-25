@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface CompteBancaireRepository extends JpaRepository<CompteBancaire, Long> {
 
     boolean existsByRIB(String rib);
+
 }
