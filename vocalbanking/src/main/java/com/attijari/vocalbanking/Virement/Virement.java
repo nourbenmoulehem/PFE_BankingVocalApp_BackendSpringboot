@@ -16,11 +16,11 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "vir_id", scope=Virement.class)
 public class Virement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int vir_id;
+    private long vir_id;
 
     @Temporal(TemporalType.DATE)
     private Date date_valeur;
@@ -28,7 +28,8 @@ public class Virement {
     @Temporal(TemporalType.DATE)
     private Date date_operation;
 
-    private String libelle;
+    @Enumerated(EnumType.STRING)
+    private LibelleVir libelle;
 
     private String bank;
 
