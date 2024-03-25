@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
     private final AuthenticationProvider authenticationProvider;
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**", "/api/v1/client/**"};
+    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**", "/api/v1/client/**", "/api/v1/operation/**"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
