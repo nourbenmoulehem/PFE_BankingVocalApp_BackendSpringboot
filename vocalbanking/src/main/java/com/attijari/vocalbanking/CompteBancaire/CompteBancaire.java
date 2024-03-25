@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "id_compteBancaire", scope= CompteBancaire.class)
 public class CompteBancaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.Carte;
 
+import com.attijari.vocalbanking.Client.Client;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -17,16 +18,18 @@ import java.util.Random;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id_produit")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "id_produit", scope= Carte.class)
 public class Carte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_produit;
-    private String code_offre;
+    @Enumerated(EnumType.STRING)
+    private CodeOffre code_offre;
     private String numero_carte;
     private String status;
     private Date date_expiration;
     private int plafond;
+
     @OneToOne(mappedBy = "carte")
     private CompteBancaire compteBancaire;
 

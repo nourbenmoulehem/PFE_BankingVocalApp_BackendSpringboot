@@ -1,6 +1,7 @@
 package com.attijari.vocalbanking.Client;
 
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.attijari.vocalbanking.Virement.Virement;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -17,7 +18,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id") // This is used to avoid infinite recursion
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "clientId", scope= Client.class) // This is used to avoid infinite recursion
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
