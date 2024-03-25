@@ -1,6 +1,7 @@
 package com.attijari.vocalbanking.Transaction;
 
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.attijari.vocalbanking.Virement.Virement;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "tran_id", scope= Transaction.class)
 public class Transaction {
 
     @Id
