@@ -34,4 +34,21 @@ public class ClientController {
         return clientService.getClientByCin(cin);
     }
 
+    @PostMapping("/getById/{id}")
+    public ResponseEntity<?> getClientById(@PathVariable Long id) {
+        System.out.println("helloooo");
+        System.out.println("id = " + id);
+
+        // Get client by id from the service
+        Client client = clientService.getClientById(id);
+
+        // Check if client is not null
+        if (client != null) {
+            return ResponseEntity.ok(client);
+        } else {
+            // If client is null, return 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
