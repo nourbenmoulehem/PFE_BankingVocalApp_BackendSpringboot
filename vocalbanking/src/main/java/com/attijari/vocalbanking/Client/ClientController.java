@@ -1,6 +1,5 @@
 package com.attijari.vocalbanking.Client;
 
-import IntentClassification.IntentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

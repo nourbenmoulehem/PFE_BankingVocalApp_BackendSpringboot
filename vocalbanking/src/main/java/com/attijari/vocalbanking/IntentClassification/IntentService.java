@@ -1,4 +1,4 @@
-package IntentClassification;
+package com.attijari.vocalbanking.IntentClassification;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,3 +43,4 @@ public class IntentService {
         return response.getBody();
     }
 }
+
