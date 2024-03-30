@@ -1,10 +1,13 @@
 package com.attijari.vocalbanking.Client;
 
+import IntentClassification.IntentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/client")
@@ -51,4 +54,22 @@ public class ClientController {
         }
     }
 
-}
+    @PostMapping("/getIntent")
+    public ResponseEntity<Map<String, String>> getIntent(@RequestBody IntentRequest request) {
+        String prompt = request.getPrompt();
+        System.out.println("Prompt: " + prompt);
+        String feedback = clientService.sendRequestToFlask(prompt);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("assistantResponse", feedback);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/getIntentoussama")
+    public String getIntent(@RequestBody String prompt) {
+        System.out.println("Prompt: " + prompt);
+        return "hello";
+    }
+
+    }
