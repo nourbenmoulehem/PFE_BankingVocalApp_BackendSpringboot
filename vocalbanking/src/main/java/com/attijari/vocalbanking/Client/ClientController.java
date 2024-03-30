@@ -56,6 +56,8 @@ public class ClientController {
     @PostMapping("/getIntent")
     public ResponseEntity<Map<String, String>> getIntent(@RequestBody IntentRequest request) {
         String prompt = request.getPrompt();
+        Long id = request.getId();
+        System.out.println("id: " + id);
         System.out.println("Prompt: " + prompt);
         String feedback = clientService.sendRequestToFlask(prompt);
 
@@ -63,12 +65,6 @@ public class ClientController {
         response.put("assistantResponse", feedback);
 
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/getIntentoussama")
-    public String getIntent(@RequestBody String prompt) {
-        System.out.println("Prompt: " + prompt);
-        return "hello";
     }
 
     }
