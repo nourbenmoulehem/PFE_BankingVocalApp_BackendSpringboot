@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.Client;
 
+import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.Virement.Virement;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -54,5 +55,8 @@ public class Client {
 //    @JsonBackReference // This is used to avoid infinite recursion
     @JoinColumn(name = "id_compteBancaire", referencedColumnName = "id_compteBancaire")  // This means Foreign key will be created only in the Client table i.e. extra column 'id_CompteBancaire' will be created in the Client table
     private CompteBancaire compteBancaire;
+
+    @OneToMany(mappedBy = "client")
+    private List<Beneficiaire> beneficiairesList;
 
 }
