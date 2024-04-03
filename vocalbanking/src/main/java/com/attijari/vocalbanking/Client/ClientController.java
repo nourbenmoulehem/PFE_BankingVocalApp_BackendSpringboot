@@ -55,11 +55,12 @@ public class ClientController {
 
     @PostMapping("/getIntent")
     public ResponseEntity<Map<String, String>> getIntent(@RequestBody IntentRequest request) {
-        String prompt = request.getPrompt();
-        Long id = request.getId();
-        System.out.println("id: " + id);
-        System.out.println("Prompt: " + prompt);
-        String feedback = clientService.sendRequestToFlask(prompt);
+        String[] prompts = request.getPrompts();
+        System.out.println("Prompts: " + prompts);
+        Long clientId = request.getClientId();
+        System.out.println("id: " + clientId);
+        System.out.println("Prompts: " + prompts);
+        String feedback = clientService.sendRequestToFlask(prompts, clientId);
 
         Map<String, String> response = new HashMap<>();
         response.put("assistantResponse", feedback);

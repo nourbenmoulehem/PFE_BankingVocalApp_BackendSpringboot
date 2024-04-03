@@ -1,20 +1,16 @@
 package com.attijari.vocalbanking.Client;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class IntentRequest {
-    private String prompt;
-    private Long id;
+    private String[] prompts;
+    private Long clientId;
 
-    // Getter and Setter for 'prompt' field
-    public String getPrompt() {
-        return prompt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
-    }
 }
