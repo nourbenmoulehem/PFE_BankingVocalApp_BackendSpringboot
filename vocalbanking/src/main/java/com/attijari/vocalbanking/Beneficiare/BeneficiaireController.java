@@ -22,4 +22,9 @@ public class BeneficiaireController {
     public List<Beneficiaire> getBeneficiairesByClient(@PathVariable Long id_client) {
         return beneficiaireService.getBeneficiairesByClient(id_client);
     }
+
+    @GetMapping("/noms/{id_client}")
+    public List<String> getNomsByClientId(@PathVariable Long id_client) {
+        return beneficiaireService.getNomsByClientId(id_client);
+    }
 }

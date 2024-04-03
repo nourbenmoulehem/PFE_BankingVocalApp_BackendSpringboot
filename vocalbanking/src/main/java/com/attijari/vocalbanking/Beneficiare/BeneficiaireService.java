@@ -40,4 +40,8 @@ public class BeneficiaireService {
     public List<Beneficiaire> getBeneficiairesByClient(Long idClient) {
         return beneficiaireRepository.findByClientClientId(idClient);
     }
+
+    public List<String> getNomsByClientId(Long idClient) {
+        return beneficiaireRepository.findNomsByClientId(idClient);
+    }
 }
