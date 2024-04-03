@@ -3,9 +3,11 @@ package com.attijari.vocalbanking.Transaction;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.Virement.Virement;
+import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,18 @@ public class TransactionService {
         } else {
             throw new RuntimeException("Compte bancaire not found");
         }
+
+    }
+
+    public List<Transaction> getLastNRows(int n) {
+        return transactionRepository.findLastNRows(n);
+    }
+
+    public List<Transaction> getOperationByDates(Date startDate, Date endDate) {
+        if (startDate.after(endDate)) {
+            throw new InvalidDatesException("Start date must be before end date");
+        }
+        return transactionRepository.findOperationsBetweenDates(startDate, endDate);
 
     }
 }
