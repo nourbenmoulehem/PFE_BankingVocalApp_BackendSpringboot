@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -27,6 +28,7 @@ public class Carte {
     private CodeOffre code_offre;
     private String numero_carte;
     private String status;
+    @Temporal(TemporalType.DATE)
     private Date date_expiration;
     private int plafond;
 
@@ -36,6 +38,11 @@ public class Carte {
     @PrePersist
     public void prePersist() {
         this.numero_carte = generateCarte();
+        this.status = "Activee";
+        this.date_expiration = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, 5); // Add 5 years
+        this.date_expiration = cal.getTime();
     }
 
     public static String generateCarte() {
