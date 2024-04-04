@@ -1,7 +1,7 @@
 package com.attijari.vocalbanking.Transaction;
 
 
-import IntentClassification.IntentService;
+//import IntentClassification.IntentService;
 import com.attijari.vocalbanking.Virement.Virement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
