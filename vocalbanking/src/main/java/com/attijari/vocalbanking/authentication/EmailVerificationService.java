@@ -116,8 +116,8 @@ public class EmailVerificationService {
         profile.setEnabled(true); // Enable the user
         profileRepository.save(profile);
 
-        System.out.println("Client: " + profile.getClient());
-        Client client = profile.getClient();
+            System.out.println("Client: " + profile.getClient());
+            Client client = profile.getClient();
 
         // TODO: create compte bancaire with unique RIB
         CompteBancaire compteBancaire = CompteBancaire.builder() // building the compte bancaire

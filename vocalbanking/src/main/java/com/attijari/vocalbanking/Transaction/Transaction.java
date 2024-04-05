@@ -10,14 +10,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "tran_id", scope= Transaction.class)
+//@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "tran_id", scope= Transaction.class)
 public class Transaction {
 
     @Id
@@ -42,6 +44,19 @@ public class Transaction {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_compteBancaire", referencedColumnName = "id_compteBancaire")
     private CompteBancaire compteBancaire;
+
+    public String getDateValeurInFrench() {
+        return formatDateInFrench(date_valeur);
+    }
+
+    public String getDateOperationInFrench() {
+        return formatDateInFrench(date_operation);
+    }
+
+    private String formatDateInFrench(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM", new Locale("fr"));
+        return sdf.format(date);
+    }
 
 
 }

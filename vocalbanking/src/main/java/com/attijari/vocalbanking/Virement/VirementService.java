@@ -2,9 +2,15 @@ package com.attijari.vocalbanking.Virement;
 
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
+import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +47,17 @@ public class VirementService {
 
     public Virement getVirementById(Long id) {
         return virementRepository.findById(id).orElseThrow(() -> new RuntimeException("Virement not found"));
+    }
+
+    public List<Virement> getLastNRows(int n) {
+        return virementRepository.findLastNRows(n);
+    }
+
+    public List<Virement> getVirementByDates(Date startDate, Date endDate) {
+        if (startDate.after(endDate)) {
+            throw new InvalidDatesException("Start date must be before end date");
+        }
+        return virementRepository.findVirementsBetweenDates(startDate, endDate);
+
     }
 }

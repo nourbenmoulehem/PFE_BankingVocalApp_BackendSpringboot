@@ -105,29 +105,38 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
+            var user = profileRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+            System.out.println("user: " + user);
+            Client client = user.getClient();
+
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+//        revokeAllUserTokens(user);
+//        saveUserToken(user, jwtToken);
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
                             request.getPassword()
                     )
             );
+
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .clientId(client.getClientId())
+                    .build();
+
         } catch (AuthenticationException e) {
             // Handle authentication failure
             throw new RuntimeException("Authentication failed: " + e.getMessage());
         }
 
-        var user = profileRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-//        revokeAllUserTokens(user);
-//        saveUserToken(user, jwtToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+
+
+
     }
 
 
