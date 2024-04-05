@@ -35,6 +35,7 @@ public class EmailVerificationService {
     private final CompteBancaireRepository compteBancaireRepository;
     private final CarteRepository carteRepository;
     private final JwtService jwtService;
+    private String ip = "192.168.1.101";
 
     public void sendVerificationEmail(Profile user) {
         String token = jwtService.generateEmailVerificationToken(user.getEmail());
@@ -49,7 +50,8 @@ public class EmailVerificationService {
 //                    + "</div>";
 
 
-        String verificationUrl = "http://192.168.1.7:5001/api/v1/auth/verify-email?token=" + token;
+        String verificationUrl = "http://"+ip+":5001/api/v1/auth/verify-email?token=" + token;
+       
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Enregistrement à la plateforme avec succès</h1>"
                 + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre compte:</h3>"
@@ -154,7 +156,7 @@ public class EmailVerificationService {
     public void sendResetPasswordEmail(Profile userProfile) {
         // sending the old encrypted password and the email in the token
         String token = jwtService.generateResetPasswordToken(userProfile.getPassword(), userProfile.getEmail());
-        String resetPasswordUrl = "http://192.168.1.7:5001/api/v1/auth/reset-password?token=" + token;
+        String resetPasswordUrl = "http://"+ip+":5001/api/v1/auth/reset-password?token=" + token;
         String emailContent = "<div style='text-align: center; '>"
                 + "<h1>Réinitialisation de mot de passe</h1>"
                 + "<h3>Veuillez appuyer sur le bouton ci-dessous pour réinitialiser votre mot de passe:</h3>"
