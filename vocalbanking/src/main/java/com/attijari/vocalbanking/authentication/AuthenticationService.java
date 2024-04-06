@@ -105,11 +105,16 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
+
+
             var user = profileRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
             System.out.println("user: " + user);
+            // TODO add exception USERNOTFOUND when the profile isn't associated with a client (if it has no client it means he's an admin or superadmin)
+            if(user.getClient() == null) {
+                throw new UserNotFoundException(request.getEmail());
+            }
             Client client = user.getClient();
-
             var jwtToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
 //        revokeAllUserTokens(user);
