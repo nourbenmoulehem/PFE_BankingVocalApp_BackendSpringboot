@@ -97,7 +97,18 @@ public class JwtService {
         return Jwts.builder()
                 .claim("email", email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))  // set token expiration as 3 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))  // set token expiration as 1 hour
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateAdminSessionToken(String email, long id) { // generate a token for reset password
+        return Jwts.builder()
+                .claim("email", email)
+                .claim("role", "ADMIN")
+                .claim("id", id)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60))  // set token expiration as 2 minutes
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -113,7 +124,7 @@ public class JwtService {
             return claims;
         } catch (ExpiredJwtException ex) {
             // Handle token expiration
-            System.out.println("Token expired HELLO: " + ex.getMessage());
+            System.out.println("Token expired: " + ex.getMessage());
             return null;
         }
         catch (SignatureException e) {
