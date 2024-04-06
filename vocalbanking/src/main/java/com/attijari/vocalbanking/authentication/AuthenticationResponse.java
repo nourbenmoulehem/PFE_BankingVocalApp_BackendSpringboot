@@ -1,6 +1,7 @@
 package com.attijari.vocalbanking.authentication;
 
 
+import com.attijari.vocalbanking.Profile.Profile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
