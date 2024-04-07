@@ -1,8 +1,7 @@
-package com.attijari.vocalbanking.Transaction;
+package com.attijari.vocalbanking.Operation;
 
 
 
-import com.attijari.vocalbanking.Virement.Virement;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,18 +15,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/operation/transaction")
 @RequiredArgsConstructor
-public class TransactionController {
-    private final TransactionService transactionService;
+public class OperationController {
+    private final OperationService operationService;
 
     @PostMapping("/compteBancaire/{id_compteBancaire}")
-    public void insertVirementsToCompteBancaire(@PathVariable Long id_compteBancaire, @RequestBody List<Transaction> transactions) {
+    public void insertVirementsToCompteBancaire(@PathVariable Long id_compteBancaire, @RequestBody List<Operation> operations) {
         System.out.println("id_compteBancaire = " + id_compteBancaire);
-        transactionService.insertTransactionsToCompteBancaire(id_compteBancaire, transactions);
+        operationService.insertTransactionsToCompteBancaire(id_compteBancaire, operations);
     }
 
     @GetMapping("/lastNRows")
-    public List<Transaction> getLastNRows(@RequestParam int n) {
-        return transactionService.getLastNRows(n);
+    public List<Operation> getLastNRows(@RequestParam int n) {
+        return operationService.getLastNRows(n);
     }
 
 
@@ -38,8 +37,8 @@ public class TransactionController {
             @RequestParam("endDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
         try {
-            List<Transaction> transactions = transactionService.getOperationByDates(startDate, endDate);
-            return ResponseEntity.ok(transactions);
+            List<Operation> operations = operationService.getOperationByDates(startDate, endDate);
+            return ResponseEntity.ok(operations);
         } catch (InvalidDatesException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

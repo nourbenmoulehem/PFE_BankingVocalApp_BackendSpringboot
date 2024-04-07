@@ -2,10 +2,7 @@ package com.attijari.vocalbanking.Beneficiare;
 
 import com.attijari.vocalbanking.Client.Client;
 import com.attijari.vocalbanking.Client.ClientRepository;
-import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
-import com.attijari.vocalbanking.Transaction.Transaction;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

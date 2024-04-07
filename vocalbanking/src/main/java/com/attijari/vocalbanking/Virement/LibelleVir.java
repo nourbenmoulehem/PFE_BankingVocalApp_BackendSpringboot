@@ -1,6 +1,6 @@
 package com.attijari.vocalbanking.Virement;
 
 public enum LibelleVir {
-    emis,
-    reçu
+    Virement_emis,
+    Virement_reçu
 }

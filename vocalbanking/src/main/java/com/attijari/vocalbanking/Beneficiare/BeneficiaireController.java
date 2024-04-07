@@ -1,6 +1,5 @@
 package com.attijari.vocalbanking.Beneficiare;
 
-import com.attijari.vocalbanking.Transaction.Transaction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

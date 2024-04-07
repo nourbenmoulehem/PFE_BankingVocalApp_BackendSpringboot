@@ -1,8 +1,7 @@
-package com.attijari.vocalbanking.Transaction;
+package com.attijari.vocalbanking.Operation;
 
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
-import com.attijari.vocalbanking.Virement.Virement;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,23 +12,23 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TransactionService {
+public class OperationService {
 
-    private final TransactionRepository transactionRepository;
+    private final OperationRepository operationRepository;
     private final CompteBancaireRepository compteBancaireRepository;
 
-    public CompteBancaire insertTransactionsToCompteBancaire(Long idCompteBancaire, List<Transaction> transactions) {
+    public CompteBancaire insertTransactionsToCompteBancaire(Long idCompteBancaire, List<Operation> operations) {
         Optional<CompteBancaire> compteBancaireOptional = compteBancaireRepository.findById(idCompteBancaire);
 
         if(compteBancaireOptional.isPresent()) {
             CompteBancaire compteBancaire = compteBancaireOptional.get();
-            for (Transaction transaction : transactions) {
-                transaction.setCompteBancaire(compteBancaire);
+            for (Operation operation : operations) {
+                operation.setCompteBancaire(compteBancaire);
 
-                transactionRepository.save(transaction);
+                operationRepository.save(operation);
             }
             // insert ALL* transaction to compteBancaire
-            compteBancaire.setTransactions(transactions);
+            compteBancaire.setOperations(operations);
             compteBancaireRepository.save(compteBancaire);
             return compteBancaire;
         } else {
@@ -38,15 +37,15 @@ public class TransactionService {
 
     }
 
-    public List<Transaction> getLastNRows(int n) {
-        return transactionRepository.findLastNRows(n);
+    public List<Operation> getLastNRows(int n) {
+        return operationRepository.findLastNRows(n);
     }
 
-    public List<Transaction> getOperationByDates(Date startDate, Date endDate) {
+    public List<Operation> getOperationByDates(Date startDate, Date endDate) {
         if (startDate.after(endDate)) {
             throw new InvalidDatesException("Start date must be before end date");
         }
-        return transactionRepository.findOperationsBetweenDates(startDate, endDate);
+        return operationRepository.findOperationsBetweenDates(startDate, endDate);
 
     }
 }

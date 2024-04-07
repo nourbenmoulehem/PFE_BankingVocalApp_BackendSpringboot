@@ -1,9 +1,6 @@
-package com.attijari.vocalbanking.Transaction;
+package com.attijari.vocalbanking.Operation;
 
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
-import com.attijari.vocalbanking.Virement.Virement;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,12 +16,12 @@ import java.util.Locale;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "tran_id", scope= Transaction.class)
-public class Transaction {
+//@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "tran_id", scope= Operation.class)
+public class Operation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int tran_id;
+    private int op_id;
 
     @Temporal(TemporalType.DATE)
     private Date date_valeur;
@@ -33,12 +30,12 @@ public class Transaction {
     private Date date_operation;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType tran_type;
+    private OperationType op_type;
 
     @Enumerated(EnumType.STRING)
-    private CanalType tran_canal;
-    private String tran_marchant;
-    private String tran_emplacement;
+    private CanalType op_canal;
+    private String op_marchant;
+    private String op_emplacement;
     private float montant;
 
     @ManyToOne(cascade = CascadeType.ALL)
