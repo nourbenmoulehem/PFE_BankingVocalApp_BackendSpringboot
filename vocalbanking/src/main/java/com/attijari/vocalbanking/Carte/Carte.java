@@ -46,10 +46,10 @@ public class Carte {
     }
 
     public static String generateCarte() {
-        // Generate 17 random digits
+        // Generate 16 random digits
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 16; i++) {
             sb.append(random.nextInt(10)); // Generates a random digit (0-9)
         }
         // Concatenate bank identifier with the random digits
