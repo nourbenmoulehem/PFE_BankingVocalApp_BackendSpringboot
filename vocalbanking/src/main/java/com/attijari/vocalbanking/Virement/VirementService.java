@@ -4,9 +4,7 @@ import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -53,11 +51,23 @@ public class VirementService {
         return virementRepository.findLastNRows(n);
     }
 
-    public List<Virement> getVirementByDates(Date startDate, Date endDate) {
+    public List<Virement> getVirementByDates(Date startDate, Date endDate, Long clientId) {
         if (startDate.after(endDate)) {
             throw new InvalidDatesException("Start date must be before end date");
         }
-        return virementRepository.findVirementsBetweenDates(startDate, endDate);
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+        int idCompteBancaire = compteBancaire.getId_compteBancaire();
+        return virementRepository.findVirementsBetweenDatesAndByCompteBancaireId(startDate, endDate, idCompteBancaire);
 
+    }
+
+    public ResponseEntity<?> getAllVirementsByClientId(Long clientId) {
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+
+        List <Virement> virements = virementRepository.findByCompteBancaire(compteBancaire);
+        if (virements.isEmpty()) {
+            return ResponseEntity.ok("Aucun virement trouvé");
+        }
+        return ResponseEntity.ok(virements);
     }
 }

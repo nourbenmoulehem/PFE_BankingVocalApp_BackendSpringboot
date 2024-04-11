@@ -248,7 +248,7 @@ public class ClientService {
                     // Now you have startDate and endDate
                     // Use these dates to query your VirementService
                     if(intent.equals("consulter_historique_virements")) {
-                        List<Virement> virements = virementService.getVirementByDates(startDate, endDate);
+                        List<Virement> virements = virementService.getVirementByDates(startDate, endDate, clientId);
                         for (Virement virement : virements) {
                             // Construct feedback based on virement details
                             feedbackBuilder.append(virement.getDateOperationInFrench()).append("\n");

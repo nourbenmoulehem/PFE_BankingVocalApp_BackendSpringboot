@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.Virement;
 
+import com.attijari.vocalbanking.Operation.RequestGetByClientId;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,14 +41,21 @@ public class VirementController {
         return virementService.getLastNRows(n);
     }
 
+    @PostMapping("/all")
+    public ResponseEntity<?> getAllVirementsByClientId(@RequestBody RequestGetByClientId request) {
+        return virementService.getAllVirementsByClientId(request.getClientId());
+    }
+
     @GetMapping("/byDate")
-    public ResponseEntity<?> getvVirementByDate(
+    public ResponseEntity<?> getVirementByDate(
             @RequestParam("startDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam("clientId") Long clientId)
+    {
         try {
-            List<Virement> virements = virementService.getVirementByDates(startDate, endDate);
+            List<Virement> virements = virementService.getVirementByDates(startDate, endDate, clientId);
             return ResponseEntity.ok(virements);
         } catch (InvalidDatesException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
