@@ -4,6 +4,7 @@ import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -37,15 +38,29 @@ public class OperationService {
 
     }
 
+    public ResponseEntity<?> getAllOperations(Long clientId) {
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+//        System.out.println("compteBancaire id = " + compteBancaire.getOperations().toString());
+//        List <Operation> operations = compteBancaire.getOperations();
+
+        List <Operation> operations = operationRepository.findByCompteBancaire(compteBancaire);
+        if (operations.isEmpty()) {
+            return ResponseEntity.ok("Aucune opération trouvée");
+        }
+        return ResponseEntity.ok(operations);
+    }
+
     public List<Operation> getLastNRows(int n) {
         return operationRepository.findLastNRows(n);
     }
 
-    public List<Operation> getOperationByDates(Date startDate, Date endDate) {
+    public List<Operation> getOperationByDates(Date startDate, Date endDate, Long clientId) {
         if (startDate.after(endDate)) {
             throw new InvalidDatesException("Start date must be before end date");
         }
-        return operationRepository.findOperationsBetweenDates(startDate, endDate);
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+        int idCompteBancaire = compteBancaire.getId_compteBancaire();
+        return operationRepository.findOperationsBetweenDatesAndByCompteBancaireId(startDate, endDate, idCompteBancaire);
 
     }
 }

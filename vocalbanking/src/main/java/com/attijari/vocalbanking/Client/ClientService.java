@@ -262,7 +262,7 @@ public class ClientService {
                         return feedbackBuilder.toString();
                     } else if (intent.equals("consulter_mouvements")) {
                         // TODO handle consulter mouvement between dates
-                        List<Operation> operations = operationService.getOperationByDates(startDate, endDate);
+                        List<Operation> operations = operationService.getOperationByDates(startDate, endDate, clientId);
                         for (Operation operation : operations) {
                             // Construct feedback based on virement details
                             feedbackBuilder.append(operation.getDateOperationInFrench()).append("\n");

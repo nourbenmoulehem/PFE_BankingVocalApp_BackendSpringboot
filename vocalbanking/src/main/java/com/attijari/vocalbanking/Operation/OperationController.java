@@ -13,15 +13,20 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/operation/transaction")
+@RequestMapping("/api/v1/operation/mouvement")
 @RequiredArgsConstructor
 public class OperationController {
     private final OperationService operationService;
 
     @PostMapping("/compteBancaire/{id_compteBancaire}")
-    public void insertVirementsToCompteBancaire(@PathVariable Long id_compteBancaire, @RequestBody List<Operation> operations) {
+    public void insertOperationsToCompteBancaire(@PathVariable Long id_compteBancaire, @RequestBody List<Operation> operations) {
         System.out.println("id_compteBancaire = " + id_compteBancaire);
         operationService.insertTransactionsToCompteBancaire(id_compteBancaire, operations);
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<?> getAllOperations(@RequestBody RequestGetByClientId request) {
+        return operationService.getAllOperations(request.getClientId());
     }
 
     @GetMapping("/lastNRows")
@@ -31,13 +36,14 @@ public class OperationController {
 
 
     @GetMapping("/byDate")
-    public ResponseEntity<?> getvVirementByDate(
+    public ResponseEntity<?> getVirementByDate(
             @RequestParam("startDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam("endDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam("clientId") Long clientId) {
         try {
-            List<Operation> operations = operationService.getOperationByDates(startDate, endDate);
+            List<Operation> operations = operationService.getOperationByDates(startDate, endDate, clientId);
             return ResponseEntity.ok(operations);
         } catch (InvalidDatesException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
