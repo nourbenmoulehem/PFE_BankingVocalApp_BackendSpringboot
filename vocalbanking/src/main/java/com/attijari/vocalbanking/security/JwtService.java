@@ -67,9 +67,9 @@ public class JwtService {
                 .compact();
     }
 
-    private boolean isTokenExpired(String jwtToken) {
+    public boolean isTokenExpired(String jwtToken) {
         return extractExpiration(jwtToken).before(new Date());
-    }
+    } // hedhy kenet private, i'm testing it so radit'ha public
 
     private Date extractExpiration(String jwtToken) {
         return extractClaim(jwtToken, Claims::getExpiration);
