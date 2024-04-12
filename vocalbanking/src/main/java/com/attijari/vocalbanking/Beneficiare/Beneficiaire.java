@@ -1,8 +1,11 @@
 package com.attijari.vocalbanking.Beneficiare;
 
 import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Virement.Virement;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -21,5 +24,8 @@ public class Beneficiaire {
     @ManyToOne
     @JoinColumn(name = "clientId")
     private Client client;
+
+//    @OneToMany(mappedBy = "beneficiaire")
+//    private List<Virement> virements;
 }
 
