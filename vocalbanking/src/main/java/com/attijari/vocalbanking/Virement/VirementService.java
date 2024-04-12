@@ -1,5 +1,8 @@
 package com.attijari.vocalbanking.Virement;
 
+import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
+import com.attijari.vocalbanking.Beneficiare.BeneficiaireController;
+import com.attijari.vocalbanking.Beneficiare.BeneficiaireService;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
@@ -17,17 +20,21 @@ import java.util.Optional;
 public class VirementService {
     private final VirementRepository virementRepository;
     private final CompteBancaireRepository compteBancaireRepository;
+    private final BeneficiaireService beneficiareService;
 
     public CompteBancaire insertVirementsToCompteBancaire(Long idCompteBancaire, List<Virement> virements) {
         System.out.println("Virements = " + virements);
         Optional<CompteBancaire> compteBancaireOptional = compteBancaireRepository.findById(idCompteBancaire);
-
+        Long idClient = compteBancaireOptional.get().getClient().getClientId();
+        List<Beneficiaire> beneficiares = beneficiareService.getBeneficiairesByClient(idClient);
         if(compteBancaireOptional.isPresent()) {
             CompteBancaire compteBancaire = compteBancaireOptional.get();
+            int counter = 0;
             for (Virement virement : virements) {
                 virement.setCompteBancaire(compteBancaire);
-
+                virement.setBeneficiaire(beneficiares.get(counter));
                 virementRepository.save(virement);
+                counter++;
             }
             compteBancaire.setVirements(virements);
             compteBancaireRepository.save(compteBancaire);
