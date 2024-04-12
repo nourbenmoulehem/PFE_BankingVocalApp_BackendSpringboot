@@ -163,13 +163,18 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void verifyToken(String token) {
+    public Long verifyToken(String token) {
         boolean isTokenExpired = jwtService.isTokenExpired(token);
         System.out.println("isTokenExpired: " + isTokenExpired);
+        String claims = jwtService.extractUsername(token);
+        System.out.println("claims: " + claims);
+        Profile profile = profileRepository.findByEmail(claims)
+                .orElseThrow(() -> new UserNotFoundException(claims));
         if(isTokenExpired) { // throw exception if the token isn't valid
             System.out.println("Token is expired");
             throw new TokenExpiredException();
         }
+        return profile.getClient().getClientId();
     }
 
     public AuthenticationResponse refreshToken(
