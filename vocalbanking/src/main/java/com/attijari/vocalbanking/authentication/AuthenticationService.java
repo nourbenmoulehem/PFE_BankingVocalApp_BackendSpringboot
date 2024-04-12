@@ -245,6 +245,31 @@ public class AuthenticationService {
             profileRepository.save(profile);
         }
 
+    public void changePassword(ChangePasswordRequest request) {
+         String currentPassword = request.getCurrentPassword();
+         String newPassword = request.getNewPassword();
+         String confirmPassword = request.getConfirmPassword();
+         Long clientId = request.getClientId();
+
+         Profile profile = profileRepository.findByClientId(clientId);
+
+         System.out.println("profile: " + profile.getEmail());
+         if(!passwordEncoder.matches(currentPassword, profile.getPassword())) {
+             throw new InvalidPasswordException("mot de passe incorrect");
+         }
+
+        System.out.println("newwPassword" + newPassword);
+        System.out.println("confirmPassword" + confirmPassword);
+
+            if(!newPassword.equals(confirmPassword)) {
+                throw new PasswordsNotMatchException("Les mots de passe ne correspondent pas");
+            }
+
+            System.out.println("before setting new password: " + profile.getPassword());
+            profile.setPassword(passwordEncoder.encode(newPassword));
+            profileRepository.save(profile);
+            System.out.println("after setting new password: " + profile.getPassword());
     }
+}
 
 
