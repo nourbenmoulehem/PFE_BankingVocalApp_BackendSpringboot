@@ -107,7 +107,7 @@ public class AuthenticationService {
         try {
             var user = profileRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
-            System.out.println("user: " + user);
+//            System.out.println("user: " + user);
             Client client = user.getClient();
 
             var jwtToken = jwtService.generateToken(user);
@@ -163,6 +163,14 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
+    public void verifyToken(String token) {
+        boolean isTokenExpired = jwtService.isTokenExpired(token);
+        System.out.println("isTokenExpired: " + isTokenExpired);
+        if(isTokenExpired) { // throw exception if the token isn't valid
+            System.out.println("Token is expired");
+            throw new TokenExpiredException();
+        }
+    }
 
     public AuthenticationResponse refreshToken(
             HttpServletRequest request,
@@ -194,6 +202,7 @@ public class AuthenticationService {
             } // TODO: Handle EXPIRED refresh token
             return null;
         }
+
 
         public void forgotPassword(String email, String cin, String phoneNumber, Date birthday) {
             var userProfile = profileRepository.findByEmail(email)

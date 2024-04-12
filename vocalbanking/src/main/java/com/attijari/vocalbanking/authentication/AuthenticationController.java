@@ -227,5 +227,24 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
         }
     }
+
+
+    // I have added this here because it belongs to the authentication flow, if the token is expired, he's lohhed out
+    @PostMapping("/verifyToken")
+    public ResponseEntity<?> verifyToken(@RequestBody VerifyTokenRequest request) {
+        try {
+            String token = request.getAccess_token(); // getting the access_token stored in RN keychain
+            authenticationService.verifyToken(token);
+            return ResponseEntity.ok("Token vérifié avec succès");
+        } catch (TokenExpiredException e) {
+            System.out.println("Le jeton a expiré: ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("LE JETON A EXPIRÉ. Veuillez réessayer en demandant un nouveau lien de réinitialisation de mot de passe.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Une erreur s'est produite: ");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
+        }
+    }
 }
 
