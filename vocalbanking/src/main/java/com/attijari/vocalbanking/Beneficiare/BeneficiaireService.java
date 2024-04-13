@@ -41,4 +41,43 @@ public class BeneficiaireService {
     public List<String> getNomsByClientId(Long idClient) {
         return beneficiaireRepository.findNomsByClientId(idClient);
     }
+
+    public void saveBeneficiaire(Beneficiaire beneficiaire, Long idClient) {
+        Optional<Client> clientOptional = clientRepository.findById(idClient);
+
+        if(clientOptional.isPresent()) {
+            Client client = clientOptional.get();
+            beneficiaire.setClient(client);
+//            client.setBeneficiairesList(List.of(beneficiaire));
+            clientRepository.save(client);
+            beneficiaireRepository.save(beneficiaire);
+        } else {
+            throw new RuntimeException("Erreur lors de l'insertion du beneficiaire");
+        }
+    }
+
+
+    public void deleteBeneficiaire(Beneficiaire beneficiaire, Long idClient) {
+        Optional<Client> clientOptional = clientRepository.findById(idClient);
+
+        if(clientOptional.isPresent()) {
+            Client client = clientOptional.get();
+            beneficiaire.setClient(client);
+            beneficiaireRepository.delete(beneficiaire);
+        } else {
+            throw new RuntimeException("Erreur lors de la suppression du beneficiaire");
+        }
+    }
+
+    public void updateBeneficiaire(Beneficiaire beneficiaire, Long idClient) {
+        Optional<Client> clientOptional = clientRepository.findById(idClient);
+
+        if(clientOptional.isPresent()) {
+            Client client = clientOptional.get();
+            beneficiaire.setClient(client);
+            beneficiaireRepository.save(beneficiaire);
+        } else {
+            throw new RuntimeException("Erreur lors de la mise à jour du beneficiaire");
+        }
+    }
 }
