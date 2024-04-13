@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "id", scope= Beneficiaire.class) // This is used to avoid infinite recursion
+//@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "id", scope= Beneficiaire.class) // This is used to avoid infinite recursion
 public class Beneficiaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
