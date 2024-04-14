@@ -21,17 +21,17 @@ public class BeneficiaireService {
 
         if(clientOptional.isPresent()) {
             Client client = clientOptional.get();
+            System.out.println("client = " + client.getNatureActivite());
             for (Beneficiaire beneficiaire : beneficiaires) {
                 beneficiaire.setClient(client);
-
                 beneficiaireRepository.save(beneficiaire);
             }
-            // insert ALL* benef to client
+//             insert ALL* benef to client
             client.setBeneficiairesList(beneficiaires);
             clientRepository.save(client);
             return client;
         } else {
-            throw new RuntimeException("Compte bancaire not found");
+            throw new RuntimeException("Error while saving beneficiaires.");
         }
     }
 

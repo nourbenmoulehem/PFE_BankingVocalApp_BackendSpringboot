@@ -15,9 +15,17 @@ public class BeneficiaireController {
     private final BeneficiaireService beneficiaireService;
 
     @PostMapping("/beneficiaires/{id_client}")
-    public void insertVirementsToCompteBancaire(@PathVariable Long id_client, @RequestBody List<Beneficiaire> beneficiaires) {
-        System.out.println("id_compteBancaire = " + id_client);
-        beneficiaireService.saveBeneficiaires(beneficiaires, id_client);
+    public void insertBeneficiairesToClient(@PathVariable Long id_client, @RequestBody List<Beneficiaire> beneficiaires) {
+        try {
+            System.out.println("id_client = " + id_client);
+            System.out.println("beneficiaires = " + beneficiaires.get(0).getNom());
+            beneficiaireService.saveBeneficiaires(beneficiaires, id_client);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+//        } catch (DataIntegrityViolationException e) {
+//            System.out.println("Error: " + e.getMessage());
+//        }
     }
 
     @GetMapping("/beneficiaires/{id_client}")
