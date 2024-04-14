@@ -1,6 +1,7 @@
 package com.attijari.vocalbanking.Beneficiare;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,18 +43,36 @@ public class BeneficiaireController {
                     .build();
             beneficiaireService.saveBeneficiaire(beneficiaire, id_client);
             return ResponseEntity.ok().body(Map.of("message", "Beneficiaire inserted successfully"));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
-    @PostMapping("/delete-beneficiaire/{id_client}") // delete a (one) new beneficiaire
-    public void deleteBeneficiaire(@PathVariable Long id_client, @RequestBody Beneficiaire beneficiaire) {
-        beneficiaireService.deleteBeneficiaire(beneficiaire, id_client);
+
+    @DeleteMapping("/delete-beneficiaire/{id_client}") // delete a (one) new beneficiaire
+    public ResponseEntity<?> deleteBeneficiaire(@PathVariable Long id_client, @RequestBody Beneficiaire beneficiaire) {
+        try {
+            System.out.println("id_client = " + id_client);
+            beneficiaireService.deleteBeneficiaire(beneficiaire, id_client);
+            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire deleted successfully"));
+        } catch (Exception e) {
+            System.out.println("Erreur: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
+        }
     }
 
-    @PostMapping("/update-beneficiaire/{id_client}") // update a (one) new beneficiaire
-    public void updateBeneficiaire(@PathVariable Long id_client, @RequestBody Beneficiaire beneficiaire) {
-        beneficiaireService.updateBeneficiaire(beneficiaire, id_client);
+    @PostMapping("/update-beneficiaire/{id_client}") // update a (one) beneficiaire
+    public ResponseEntity<?> updateBeneficiaire(@PathVariable Long id_client, @RequestBody Beneficiaire beneficiaire) {
+
+        try {
+                    System.out.println("id_client = " + id_client);
+            beneficiaireService.updateBeneficiaire(beneficiaire, id_client);
+            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire updated successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
+        }
+
     }
 }

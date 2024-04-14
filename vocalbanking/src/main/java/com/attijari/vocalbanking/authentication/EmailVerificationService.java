@@ -35,7 +35,7 @@ public class EmailVerificationService {
     private final CompteBancaireRepository compteBancaireRepository;
     private final CarteRepository carteRepository;
     private final JwtService jwtService;
-    private String ip = "192.168.1.7";
+    private String ip = "192.168.1.8";
 
     public void sendVerificationEmail(Profile user) {
         String token = jwtService.generateEmailVerificationToken(user.getEmail());
