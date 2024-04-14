@@ -1,6 +1,8 @@
 package com.attijari.vocalbanking.Profile;
 
 import com.attijari.vocalbanking.Client.Client;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +22,9 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Profile implements UserDetails {
 
     @Id
@@ -30,7 +35,7 @@ public class Profile implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToOne
+    @OneToOne(mappedBy = "profile")
     @JoinColumn(name = "client_id", referencedColumnName = "clientId")
     private Client client;
     private boolean isEnabled=false; // for account verification

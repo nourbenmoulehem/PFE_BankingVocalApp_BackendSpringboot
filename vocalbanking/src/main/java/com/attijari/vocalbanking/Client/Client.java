@@ -2,6 +2,7 @@ package com.attijari.vocalbanking.Client;
 
 import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.attijari.vocalbanking.Profile.Profile;
 import com.attijari.vocalbanking.Virement.Virement;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -50,6 +51,10 @@ public class Client {
     private boolean hasOtherBank;
     private String agence;
     private String adresse;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    @JsonBackReference // This is used to avoid infinite recursion
