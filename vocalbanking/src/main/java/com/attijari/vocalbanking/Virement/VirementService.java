@@ -86,10 +86,16 @@ public class VirementService {
     }
 
     public String initiateTransfer(VirementRequest request) throws InsufficientBalanceException, InvalidBeneficiaryException {
-        // Check if the client has any virement with status 'initié'
-        CompteBancaire compteBancaire = compteBancaireRepository.findById(request.getClientId())
-                .orElseThrow(() -> new NoSuchElementException("Client not found"));
+
+        // Retrieve the CompteBancaire by the client ID
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(request.getClientId()); // changed from findById to findByClientID
+//                .orElseThrow(() -> new NoSuchElementException("Client not found"));
+
+
+        // Retrieve virements by the CompteBancaire
         List<Virement> virements = virementRepository.findByCompteBancaire(compteBancaire);
+
+        // Check if the client has any virement with status 'initié'
         for (Virement virement : virements) {
             if (virement.getEtat() == EtatVirement.initié) {
                 return "You have an existing transfer that is not yet verified. Please verify it before initiating a new one.";
@@ -104,6 +110,7 @@ public class VirementService {
         // Check if the beneficiary exists and is related to the client
         Beneficiaire beneficiaire = beneficiaireRepository.findById(request.getBeneficiaryId())
                 .orElseThrow(() -> new NoSuchElementException("beneficiare pas trouvé"));
+
         if (!beneficiaire.getClient().getClientId().equals(request.getClientId())) {
             throw new InvalidBeneficiaryException("benficiare existe mais n'est pas lié au client");
         }
@@ -117,6 +124,7 @@ public class VirementService {
         virement.setEtat(EtatVirement.initié);
         virement.setBank("webank");
 
+        //setting the dateOperation
         // Get the current date
         Date dateOperation = new Date();
         Calendar calendar = Calendar.getInstance();
@@ -133,6 +141,7 @@ public class VirementService {
             calendar.add(Calendar.DAY_OF_MONTH, 3);
         }
 
+        // setting date valeur
         Date dateValeur = calendar.getTime();
         virement.setDateOperation(dateOperation);
         virement.setDateValeur(dateValeur);
