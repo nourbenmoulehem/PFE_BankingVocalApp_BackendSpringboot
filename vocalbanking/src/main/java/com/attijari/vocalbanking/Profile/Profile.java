@@ -22,9 +22,9 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Profile implements UserDetails {
 
     @Id
@@ -35,9 +35,14 @@ public class Profile implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToOne(mappedBy = "profile")
+
+
+
+    @OneToOne
     @JoinColumn(name = "client_id", referencedColumnName = "clientId")
     private Client client;
+
+
     private boolean isEnabled=false; // for account verification
 
     @Override
