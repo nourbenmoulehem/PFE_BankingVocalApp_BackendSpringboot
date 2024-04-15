@@ -36,7 +36,7 @@ public class VirementService {
         List<Beneficiaire> beneficiares = beneficiareService.getBeneficiairesByClient(idClient);
         if(compteBancaireOptional.isPresent()) {
             CompteBancaire compteBancaire = compteBancaireOptional.get();
-            int counter = 0;
+            int counter = 1;
             for (Virement virement : virements) {
                 virement.setCompteBancaire(compteBancaire);
                 virement.setBeneficiaire(beneficiares.get(counter));

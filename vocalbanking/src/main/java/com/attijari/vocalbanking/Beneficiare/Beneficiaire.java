@@ -14,6 +14,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"clientId", "rib"})
+})
 //@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "id", scope= Beneficiaire.class) // This is used to avoid infinite recursion
 public class Beneficiaire {
     @Id
@@ -23,6 +26,7 @@ public class Beneficiaire {
     private String nom;
 
     private String rib;
+
 
     @ManyToOne
     @JoinColumn(name = "clientId")
