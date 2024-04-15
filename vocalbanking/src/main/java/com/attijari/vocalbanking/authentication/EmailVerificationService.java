@@ -175,7 +175,8 @@ public class EmailVerificationService {
 
     public void sendVerifyTransferEmail(Virement virement, Client client) {
         // Create the verification URL
-        String verificationUrl = "http://"+ip+":5001//api/v1/operation/virement/verifier-virement/" + virement.getVir_id();
+        String verificationUrl = "http://"+ip+":5001/api/v1/operation/virement/verifier-virement/" + virement.getVir_id();
+
 
         // Create the email content
         String emailContent = "<div style='text-align: center; '>"
@@ -184,7 +185,11 @@ public class EmailVerificationService {
                 + "<a href='" + verificationUrl + "' style='display: inline-block; background-color: #FB8500; color: black; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-size: 26px; font-weight: bold; '>Vérifier</a>"
                 + "</div>";
         // Get the email from the client's profile
-        Profile profile = client.getProfile();
+//        Profile profile = client.getProfile();
+
+        Profile profile = profileRepository.findByClientId(client.getClientId());
+
+        System.out.println("Profile email: " + profile.getEmail());
         if (profile != null) {
             String email = profile.getEmail();
             // use email
