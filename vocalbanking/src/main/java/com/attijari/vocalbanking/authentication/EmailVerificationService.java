@@ -9,6 +9,7 @@ import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.Profile.Profile;
 import com.attijari.vocalbanking.Profile.ProfileRepository;
+import com.attijari.vocalbanking.Virement.Virement;
 import com.attijari.vocalbanking.exceptions.TokenExpiredException;
 import com.attijari.vocalbanking.exceptions.UserNotFoundException;
 import com.attijari.vocalbanking.security.JwtService;
@@ -35,6 +36,7 @@ public class EmailVerificationService {
     private final CompteBancaireRepository compteBancaireRepository;
     private final CarteRepository carteRepository;
     private final JwtService jwtService;
+
     private String ip = "192.168.1.8";
 
     public void sendVerificationEmail(Profile user) {
@@ -170,6 +172,34 @@ public class EmailVerificationService {
         if (jwtService.verifyToken(token) == null) {
             throw new TokenExpiredException();
         }
+    }
+
+    public void sendVerifyTransferEmail(Virement virement, Client client) {
+        // Create the verification URL
+        String verificationUrl = "http://"+ip+":5001/api/v1/operation/virement/verifier-virement/" + virement.getVir_id();
+
+
+        // Create the email content
+        String emailContent = "<div style='text-align: center; '>"
+                + "<h1>Verification de virement</h1>"
+                + "<h3>Veuillez appuyer sur le bouton ci-dessous pour vérifier votre virement:</h3>"
+                + "<a href='" + verificationUrl + "' style='display: inline-block; background-color: #FB8500; color: black; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-size: 26px; font-weight: bold; '>Vérifier</a>"
+                + "</div>";
+        // Get the email from the client's profile
+//        Profile profile = client.getProfile();
+
+        Profile profile = profileRepository.findByClientId(client.getClientId());
+
+        System.out.println("Profile email: " + profile.getEmail());
+        if (profile != null) {
+            String email = profile.getEmail();
+            // use email
+            emailSenderService.sendEmail(email,"Verification de virement", emailContent);
+        } else {
+            // handle the case where the profile is null
+            throw new UserNotFoundException("");
+        }
+
     }
 }
 
