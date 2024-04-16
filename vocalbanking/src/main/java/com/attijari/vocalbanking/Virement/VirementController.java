@@ -74,7 +74,7 @@ public class VirementController {
             String response = virementService.initiateTransfer(request);
             logger.info("Transfer initiated successfully, sending response...");
             return ResponseEntity.ok(response);
-        } catch (InsufficientBalanceException | InvalidBeneficiaryException e) {
+        } catch (InsufficientBalanceException e) {
             logger.error("Error while initiating transfer: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -83,16 +83,24 @@ public class VirementController {
     public ResponseEntity<?> verifyTransfer(@PathVariable Long virementId) {
         try {
             Virement virement = virementService.verifyTransfer(virementId);
+            // Check if the virement is already verified
+            if (virement.getEtat() == EtatVirement.en_cours) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous avez déjà vérifié ce virement.");
+            }
             VirementResponse response = VirementResponse.builder()
+                    .virId(virement.getVir_id())
                     .libelle(virement.getLibelle())
                     .dateOperation(virement.getDateOperation())
+                    .dateValeur(virement.getDateValeur())
                     .bank(virement.getBank())
                     .montant(virement.getMontant())
                     .motif(virement.getMotif())
                     .etat(virement.getEtat())
-                    .beneficiaire(virement.getBeneficiaire())
+                    .beneficiaireNom(virement.getBeneficiaire().getNom())
                     .build();
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("your_mobile_app_url_here")).body(response);
+            return ResponseEntity.status(HttpStatus.FOUND)
+//                    .location(URI.create("your_mobile_app_url_here"))
+                    .body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

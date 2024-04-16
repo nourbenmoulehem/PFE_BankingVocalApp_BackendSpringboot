@@ -1,14 +1,14 @@
 package com.attijari.vocalbanking.Virement;
 
 import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
-import com.attijari.vocalbanking.Beneficiare.BeneficiaireController;
+
 import com.attijari.vocalbanking.Beneficiare.BeneficiaireService;
 import com.attijari.vocalbanking.Beneficiare.BeneficiareRepository;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
 import com.attijari.vocalbanking.authentication.EmailVerificationService;
 import com.attijari.vocalbanking.exceptions.InsufficientBalanceException;
-import com.attijari.vocalbanking.exceptions.InvalidBeneficiaryException;
+
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class VirementService {
         Optional<CompteBancaire> compteBancaireOptional = compteBancaireRepository.findById(idCompteBancaire);
         Long idClient = compteBancaireOptional.get().getClient().getClientId();
         List<Beneficiaire> beneficiares = beneficiareService.getBeneficiairesByClient(idClient);
-        if(compteBancaireOptional.isPresent()) {
+        if (compteBancaireOptional.isPresent()) {
             CompteBancaire compteBancaire = compteBancaireOptional.get();
             int counter = 1;
             for (Virement virement : virements) {
@@ -78,28 +78,36 @@ public class VirementService {
     public ResponseEntity<?> getAllVirementsByClientId(Long clientId) {
         CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
 
-        List <Virement> virements = virementRepository.findByCompteBancaire(compteBancaire);
+        List<Virement> virements = virementRepository.findByCompteBancaire(compteBancaire);
         if (virements.isEmpty()) {
             return ResponseEntity.ok("Aucun virement trouvé");
         }
         return ResponseEntity.ok(virements);
     }
 
-    public String initiateTransfer(VirementRequest request) throws InsufficientBalanceException, InvalidBeneficiaryException {
+    public String initiateTransfer(VirementRequest request) throws InsufficientBalanceException {
 
         // Retrieve the CompteBancaire by the client ID
         CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(request.getClientId()); // changed from findById to findByClientID
 //                .orElseThrow(() -> new NoSuchElementException("Client not found"));
 
-
+        if (compteBancaire == null) {
+            return "Compte bancaire inexistant";
+        }
+        // Check if the beneficiary exists and is related to the client
+        Beneficiaire beneficiaire = beneficiaireRepository.findByRIBandClientId(request.getRIB(), request.getClientId());
+        if (beneficiaire == null) {
+            return "Beneficiaire inexistant";
+        }
         // Retrieve virements by the CompteBancaire
         List<Virement> virements = virementRepository.findByCompteBancaire(compteBancaire);
 
         // Check if the client has any virement with status 'initié'
         for (Virement virement : virements) {
             if (virement.getEtat() == EtatVirement.initié) {
-                return "You have an existing transfer that is not yet verified. Please verify it before initiating a new one.";
+                return "Vous avez déjà un virement en cours d'initiation, veuillez le vérifier avant d'en initier un autre";
             }
+
         }
 
         // Check if the client has enough balance
@@ -107,13 +115,7 @@ public class VirementService {
             throw new InsufficientBalanceException("solde insuffisant");
         }
 
-        // Check if the beneficiary exists and is related to the client
-        Beneficiaire beneficiaire = beneficiaireRepository.findById(request.getBeneficiaryId())
-                .orElseThrow(() -> new NoSuchElementException("beneficiare pas trouvé"));
 
-        if (!beneficiaire.getClient().getClientId().equals(request.getClientId())) {
-            throw new InvalidBeneficiaryException("benficiare existe mais n'est pas lié au client");
-        }
         logger.info("Initiating transfer...");
         // Create a new Virement
         Virement virement = new Virement();
@@ -155,6 +157,7 @@ public class VirementService {
         logger.info("Verification email sent successfully");
         return "Transfer initiated successfully";
     }
+
     public Virement verifyTransfer(Long virementId) {
         // Retrieve the virement
         Virement virement = virementRepository.findById(virementId).orElseThrow(() -> new NoSuchElementException("Virement not found"));

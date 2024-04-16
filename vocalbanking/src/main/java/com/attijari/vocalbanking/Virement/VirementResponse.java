@@ -15,15 +15,19 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VirementResponse {
+    private Long virId;
     @Enumerated(EnumType.STRING)
     private LibelleVir libelle;
     @Temporal(TemporalType.DATE)
     @JsonProperty("date_operation")
     private Date dateOperation;
+    @Temporal(TemporalType.DATE)
+    @JsonProperty("date_valeur")
+    private Date dateValeur;
     private String bank;
     private float montant;
     private String motif;
     @Enumerated(EnumType.STRING)
     private EtatVirement etat;
-    private Beneficiaire beneficiaire;
+    private String beneficiaireNom;
 }

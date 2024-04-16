@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VirementRequest {
     private Long clientId;
-    private Long beneficiaryId;
+    private String RIB;
     private float montant;
     private String motif;
 }
