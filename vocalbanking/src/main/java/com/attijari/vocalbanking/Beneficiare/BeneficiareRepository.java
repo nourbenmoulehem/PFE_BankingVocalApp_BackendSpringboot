@@ -10,6 +10,8 @@ import java.util.List;
 public interface BeneficiareRepository extends JpaRepository<Beneficiaire, Long> {
 
     List<Beneficiaire> findByClientClientId(Long clientId);
+    @Query("SELECT b FROM Beneficiaire b WHERE b.rib = :rib AND b.client.id = :clientId")
+    Beneficiaire findByRIBandClientId(String rib, Long clientId);
 
     @Query("SELECT b.nom FROM Beneficiaire b WHERE b.client.id = :clientId")
     List<String> findNomsByClientId(Long clientId);
