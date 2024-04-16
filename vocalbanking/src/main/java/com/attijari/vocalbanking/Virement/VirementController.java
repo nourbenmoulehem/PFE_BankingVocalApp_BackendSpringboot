@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VirementController {
     private final VirementService virementService;
+    private final VirementRepository virementRepository;
     private final Logger logger = LoggerFactory.getLogger(VirementController.class);
     @GetMapping
     public List<Virement> getAllVirements() {
@@ -82,11 +83,14 @@ public class VirementController {
     @PostMapping("/verifier-virement/{virementId}")
     public ResponseEntity<?> verifyTransfer(@PathVariable Long virementId) {
         try {
-            Virement virement = virementService.verifyTransfer(virementId);
+
+            Virement virement = virementRepository.findByVirId(virementId);
+            logger.info("Retrieved virement with ID {}", virementId);
             // Check if the virement is already verified
             if (virement.getEtat() == EtatVirement.en_cours) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous avez déjà vérifié ce virement.");
             }
+            virement = virementService.verifyTransfer(virementId);
             VirementResponse response = VirementResponse.builder()
                     .virId(virement.getVir_id())
                     .libelle(virement.getLibelle())

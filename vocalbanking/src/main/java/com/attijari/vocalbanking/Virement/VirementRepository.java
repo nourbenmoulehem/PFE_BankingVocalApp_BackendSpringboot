@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VirementRepository extends JpaRepository<Virement, Long>  {
@@ -22,4 +23,6 @@ public interface VirementRepository extends JpaRepository<Virement, Long>  {
 
     @Query("SELECT v FROM Virement v WHERE v.compteBancaire = ?1")
     List<Virement> findByCompteBancaire(CompteBancaire compteBancaire);
+    @Query("SELECT v FROM Virement v WHERE v.vir_id = ?1")
+    Virement findByVirId(Long vir_id);
 }
