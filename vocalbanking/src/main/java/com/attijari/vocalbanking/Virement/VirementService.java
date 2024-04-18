@@ -168,7 +168,7 @@ public class VirementService {
         compteBancaireRepository.save(compteBancaire);
 
         // Update the virement status
-        virement.setEtat(EtatVirement.en_cours);
+        virement.setEtat(EtatVirement.exécuté);
         virementRepository.save(virement);
 
         return virement;

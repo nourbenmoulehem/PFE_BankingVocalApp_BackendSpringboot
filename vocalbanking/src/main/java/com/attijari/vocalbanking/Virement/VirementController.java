@@ -87,7 +87,7 @@ public class VirementController {
             Virement virement = virementRepository.findByVirId(virementId);
             logger.info("Retrieved virement with ID {}", virementId);
             // Check if the virement is already verified
-            if (virement.getEtat() == EtatVirement.en_cours) {
+            if (virement.getEtat() == EtatVirement.exécuté) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vous avez déjà vérifié ce virement.");
             }
             virement = virementService.verifyTransfer(virementId);
