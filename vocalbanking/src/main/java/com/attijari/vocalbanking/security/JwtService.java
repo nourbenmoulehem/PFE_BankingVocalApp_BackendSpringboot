@@ -108,7 +108,7 @@ public class JwtService {
                 .claim("role", "ADMIN")
                 .claim("id", id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60))  // set token expiration as 2 minutes
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))   // set token expiration as 1 hour
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

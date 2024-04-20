@@ -17,6 +17,7 @@ public class ProfileController {
 
      @PostMapping("/profile/register")
      public ResponseEntity<?> register(@RequestBody Profile profile) { // superadmin is going to add new admins, endpoint for superadmin
+         System.out.println("profile: " + profile);
          Profile newProfile = profileService.insertProfile(profile);
          return ResponseEntity.ok(newProfile);
      }
@@ -27,11 +28,32 @@ public class ProfileController {
          return profileService.authenticate(profile, response);
      }
 
+     @GetMapping("/users/getUsers")
+        public ResponseEntity<?> getAllProfiles() { // endpoint for getting all administrators
+            return ResponseEntity.ok(profileService.getAllProfiles());
+        }
+
+
+
+        @DeleteMapping("/profile/delete/{id}")
+        public ResponseEntity<?> deleteProfile(@PathVariable long id) { // endpoint for deleting an administrator
+            return ResponseEntity.ok(profileService.deleteProfile(id));
+        }
+
+        @PostMapping("/profile/update")
+        public ResponseEntity<?> updateProfile(@RequestBody Profile profile) { // endpoint for updating an administrator
+            return ResponseEntity.ok(profileService.updateProfile(profile));
+        }
+
      @PostMapping("/profile/verifyToken")
         public ResponseEntity<?> verifyToken(@CookieValue("token") String token) { // endpoint for verifying token
-
+            System.out.println("token: " + token);
             return ResponseEntity.ok(profileService.verifyToken(token));
         }
+
+
+
+
 
     // @PostMapping("/logout")
     // public ResponseEntity<?> logout(@RequestBody Profile profile) {

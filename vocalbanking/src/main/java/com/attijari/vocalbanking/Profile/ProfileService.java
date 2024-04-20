@@ -14,7 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -83,5 +85,24 @@ public class ProfileService {
         }
 
         return ResponseEntity.status(401).body("Invalid token");
+    }
+
+    public List<Profile> getAllProfiles() {
+        return profileRepository.findProfilesWhereClientIsNull();
+    }
+
+    public String deleteProfile(long id) {
+        profileRepository.deleteById(id);
+        return "Profile deleted";
+    }
+
+    public Object updateProfile(Profile profile) {
+        Optional<Profile> profileOptional = profileRepository.findById(profile.getId());
+        if (profileOptional.isPresent()) {
+            Profile p = profileOptional.get();
+            p.setRole(profile.getRole());
+            return profileRepository.save(p);
+        }
+        return "Profile not found";
     }
 }
