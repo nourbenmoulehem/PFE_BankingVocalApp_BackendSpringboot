@@ -1,6 +1,9 @@
 package com.attijari.vocalbanking.Reclamations;
 
+import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Client.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +14,19 @@ import org.springframework.web.bind.annotation.*;
 public class ReclamationController {
 
     private final ReclamationService reclamationService;
+    private final ClientService clientService;
 
     @PostMapping("/reclamation/add")
     public ResponseEntity<?> addReclamation(@RequestBody Reclamation reclamation) {
+        return ResponseEntity.ok(reclamationService.addReclamation(reclamation));
+    }
+    @PostMapping("/reclamation/add/{clientId}")
+    public ResponseEntity<?> addReclamationByID(@PathVariable Long clientId, @RequestBody Reclamation reclamation) {
+        Client client = clientService.getClientById(clientId);
+        if (client == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+        }
+        reclamation.setClient(client);
         return ResponseEntity.ok(reclamationService.addReclamation(reclamation));
     }
 
