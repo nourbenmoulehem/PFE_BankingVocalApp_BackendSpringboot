@@ -4,6 +4,7 @@ import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.Reclamations.Reclamation;
 import com.attijari.vocalbanking.Virement.Virement;
+import com.attijari.vocalbanking.notification.Notification;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -59,7 +60,9 @@ public class Client {
 
     @OneToMany(mappedBy = "client")
     private List<Beneficiaire> beneficiairesList;
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client")
     private List<Reclamation> reclamations;
+    @OneToMany(mappedBy = "client")
+    private List<Notification> notifications;
 
 }
