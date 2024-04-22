@@ -1,9 +1,7 @@
 package com.attijari.vocalbanking.Reclamations;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.attijari.vocalbanking.Client.Client;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +24,7 @@ public class Reclamation {
 
     private String descriptionAssistant;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 }
