@@ -75,12 +75,15 @@ public class VirementController {
             String response = virementService.initiateTransfer(request);
             logger.info("Transfer initiated successfully, sending response...");
             return ResponseEntity.ok(response);
-        } catch (InsufficientBalanceException e) {
+        }
+
+        catch (InsufficientBalanceException e) {
             logger.error("Error while initiating transfer: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            System.out.println("Error while initiating transfer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Solde insuffisant" + e.getMessage());
         }
     }
-    @PostMapping("/verifier-virement/{virementId}")
+    @GetMapping("/verifier-virement/{virementId}")
     public ResponseEntity<?> verifyTransfer(@PathVariable Long virementId) {
         try {
 

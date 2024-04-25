@@ -112,7 +112,8 @@ public class VirementService {
 
         // Check if the client has enough balance
         if (compteBancaire.getSolde() < request.getMontant()) {
-            throw new InsufficientBalanceException("solde insuffisant");
+//            throw new InsufficientBalanceException("solde insuffisant");
+            return "Solde insuffisant";
         }
 
 
@@ -151,6 +152,8 @@ public class VirementService {
 
         // Save the Virement
         virement = virementRepository.save(virement);
+        // TODO : save as opration
+        // TODO : update solde beneficiarre if it exists
         logger.info("Transfer initiated successfully, sending verification email...");
         // Send the verification email
         emailVerificationService.sendVerifyTransferEmail(virement, compteBancaire.getClient());
