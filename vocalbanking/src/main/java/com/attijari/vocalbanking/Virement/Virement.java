@@ -1,5 +1,6 @@
 package com.attijari.vocalbanking.Virement;
 
+import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +49,10 @@ public class Virement {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_compteBancaire", referencedColumnName = "id_compteBancaire")
     private CompteBancaire compteBancaire;
+
+    @ManyToOne
+//    @JoinColumn(name = "id_beneficiaire", referencedColumnName = "id_beneficiaire")
+    private Beneficiaire beneficiaire;
 
 
 

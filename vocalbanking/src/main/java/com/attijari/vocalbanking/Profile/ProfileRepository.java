@@ -14,4 +14,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT p FROM Profile p WHERE p.client IS NULL")
     List<Profile> findProfilesWhereClientIsNull();
+  
+    @Query("SELECT p FROM Profile p WHERE p.client.clientId = ?1")
+    Profile findByClientId(Long client_id);
 }

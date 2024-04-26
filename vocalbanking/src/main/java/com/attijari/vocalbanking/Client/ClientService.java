@@ -2,8 +2,8 @@ package com.attijari.vocalbanking.Client;
 
 import com.attijari.vocalbanking.Beneficiare.BeneficiaireService;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireService;
-import com.attijari.vocalbanking.Transaction.Transaction;
-import com.attijari.vocalbanking.Transaction.TransactionService;
+import com.attijari.vocalbanking.Operation.Operation;
+import com.attijari.vocalbanking.Operation.OperationService;
 import com.attijari.vocalbanking.Virement.Virement;
 import com.attijari.vocalbanking.Virement.VirementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ public class ClientService {
     // for vocal
     private  final BeneficiaireService beneficiaireService;
     private final VirementService virementService;
-    private final TransactionService transactionService;
+    private final OperationService operationService;
     NumberFormat frenchNumberFormat = NumberFormat.getInstance(Locale.FRENCH);
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -217,15 +217,15 @@ public class ClientService {
                 }
                 else if(intent.equals("consulter_mouvements")) {
                     // TODO handle retrieving mouvement by last n number
-                    List<Transaction> transactions = transactionService.getLastNRows(num);
+                    List<Operation> operations = operationService.getLastNRows(num);
 
-                    for (Transaction transaction : transactions) {
-                        feedbackBuilder.append("mouvement avec ID: ").append(transaction.getTran_id()).append("\n");
-                        feedbackBuilder.append("Libellé: ").append(transaction.getTran_canal()).append("\n");
-                        feedbackBuilder.append("Date opération: ").append(transaction.getDateOperationInFrench()).append("\n");
-                        feedbackBuilder.append("Date valeur: ").append(transaction.getDateValeurInFrench()).append("\n");
-                        feedbackBuilder.append("mouvement  ").append(transaction.getTran_type()).append("\n");
-                        feedbackBuilder.append("montant  ").append(transaction.getMontant()).append("\n");
+                    for (Operation operation : operations) {
+                        feedbackBuilder.append("mouvement avec ID: ").append(operation.getOp_id()).append("\n");
+                        feedbackBuilder.append("Libellé: ").append(operation.getOp_canal()).append("\n");
+                        feedbackBuilder.append("Date opération: ").append(operation.getDateOperationInFrench()).append("\n");
+                        feedbackBuilder.append("Date valeur: ").append(operation.getDateValeurInFrench()).append("\n");
+                        feedbackBuilder.append("mouvement  ").append(operation.getOp_type()).append("\n");
+                        feedbackBuilder.append("montant  ").append(operation.getMontant()).append("\n");
                         // Add more information as needed
                         feedbackBuilder.append("\n");
                     }
@@ -248,7 +248,7 @@ public class ClientService {
                     // Now you have startDate and endDate
                     // Use these dates to query your VirementService
                     if(intent.equals("consulter_historique_virements")) {
-                        List<Virement> virements = virementService.getVirementByDates(startDate, endDate);
+                        List<Virement> virements = virementService.getVirementByDates(startDate, endDate, clientId);
                         for (Virement virement : virements) {
                             // Construct feedback based on virement details
                             feedbackBuilder.append(virement.getDateOperationInFrench()).append("\n");
@@ -262,16 +262,16 @@ public class ClientService {
                         return feedbackBuilder.toString();
                     } else if (intent.equals("consulter_mouvements")) {
                         // TODO handle consulter mouvement between dates
-                        List<Transaction> transactions = transactionService.getOperationByDates(startDate, endDate);
-                        for (Transaction transaction : transactions) {
+                        List<Operation> operations = operationService.getOperationByDates(startDate, endDate, clientId);
+                        for (Operation operation : operations) {
                             // Construct feedback based on virement details
-                            feedbackBuilder.append(transaction.getDateOperationInFrench()).append("\n");
-                            feedbackBuilder.append("mouvement avec ID: ").append(transaction.getTran_id()).append("\n");
-                            feedbackBuilder.append("Libellé: ").append(transaction.getTran_canal()).append("\n");
-                            feedbackBuilder.append("Date opération: ").append(transaction.getDateOperationInFrench()).append("\n");
-                            feedbackBuilder.append("Date valeur: ").append(transaction.getDateValeurInFrench()).append("\n");
-                            feedbackBuilder.append("mouvement  ").append(transaction.getTran_type()).append("\n");
-                            feedbackBuilder.append("montant  ").append(transaction.getMontant()).append("\n");
+                            feedbackBuilder.append(operation.getDateOperationInFrench()).append("\n");
+                            feedbackBuilder.append("mouvement avec ID: ").append(operation.getOp_id()).append("\n");
+                            feedbackBuilder.append("Libellé: ").append(operation.getOp_canal()).append("\n");
+                            feedbackBuilder.append("Date opération: ").append(operation.getDateOperationInFrench()).append("\n");
+                            feedbackBuilder.append("Date valeur: ").append(operation.getDateValeurInFrench()).append("\n");
+                            feedbackBuilder.append("mouvement  ").append(operation.getOp_type()).append("\n");
+                            feedbackBuilder.append("montant  ").append(operation.getMontant()).append("\n");
                             feedbackBuilder.append("\n");
                         }
                         return feedbackBuilder.toString();

@@ -2,22 +2,19 @@ package com.attijari.vocalbanking.CompteBancaire;
 
 import com.attijari.vocalbanking.Carte.Carte;
 import com.attijari.vocalbanking.Client.Client;
-import com.attijari.vocalbanking.Transaction.Transaction;
+import com.attijari.vocalbanking.Operation.Operation;
 import com.attijari.vocalbanking.Virement.Virement;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 @Entity
@@ -43,7 +40,7 @@ public class CompteBancaire {
     private Carte carte;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "compteBancaire", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    private List<Operation> operations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "compteBancaire", cascade = CascadeType.ALL)
     private List<Virement> virements;

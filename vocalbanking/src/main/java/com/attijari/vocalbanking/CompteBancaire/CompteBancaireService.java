@@ -12,6 +12,7 @@ public class CompteBancaireService {
 
     CompteBancaireRepository compteBancaireRepository;
 
+
     public String generateUniqueRIB() {
         String rib;
         do {
