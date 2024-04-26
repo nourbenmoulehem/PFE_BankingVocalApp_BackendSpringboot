@@ -1,6 +1,11 @@
 package com.attijari.vocalbanking.Client;
 
+import com.attijari.vocalbanking.Beneficiare.Beneficiaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
+import com.attijari.vocalbanking.Reclamations.Reclamation;
+import com.attijari.vocalbanking.Profile.Profile;
+import com.attijari.vocalbanking.Virement.Virement;
+import com.attijari.vocalbanking.notification.Notification;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -17,7 +22,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id") // This is used to avoid infinite recursion
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property = "clientId", scope= Client.class) // This is used to avoid infinite recursion
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +54,20 @@ public class Client {
     private String agence;
     private String adresse;
 
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+//    private Profile profile;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    @JsonBackReference // This is used to avoid infinite recursion
     @JoinColumn(name = "id_compteBancaire", referencedColumnName = "id_compteBancaire")  // This means Foreign key will be created only in the Client table i.e. extra column 'id_CompteBancaire' will be created in the Client table
     private CompteBancaire compteBancaire;
+
+    @OneToMany(mappedBy = "client")
+    private List<Beneficiaire> beneficiairesList;
+    @OneToMany(mappedBy = "client")
+    private List<Reclamation> reclamations;
+    @OneToMany(mappedBy = "client")
+    private List<Notification> notifications;
 
 }

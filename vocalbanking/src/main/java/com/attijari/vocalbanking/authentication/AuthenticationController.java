@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping ("/api/v1/auth")
@@ -51,10 +53,15 @@ public class AuthenticationController {
             AuthenticationResponse response = authenticationService.authenticate(request);
             return ResponseEntity.ok(response);
         } catch (UserNotFoundException e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
-        } catch (RuntimeException e) {
+        }
+        catch (RuntimeException e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Échec de l'authentification: " + e.getMessage());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard: " + e.getMessage());
         }
     }
@@ -219,6 +226,42 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
         }
         catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
+        }
+    }
+
+
+    // I have added this here because it belongs to the authentication flow, if the token is expired, he's lohhed out
+    @PostMapping("/verifyToken")
+    public ResponseEntity<?> verifyToken(@RequestBody VerifyTokenRequest request) {
+        try {
+            String token = request.getAccess_token(); // getting the access_token stored in RN keychain
+                Long clientId = authenticationService.verifyToken(token);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "La vérification du jeton a réussi");
+            response.put("clientId", clientId);
+            return ResponseEntity.ok(response);
+        } catch (TokenExpiredException e) {
+            System.out.println("Le jeton a expiré: ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("LE JETON A EXPIRÉ. Veuillez réessayer en demandant un nouveau lien de réinitialisation de mot de passe.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bien désolé, l'utilisateur n'a pas été trouvé. Veuillez vérifier les informations fournies et réessayer.: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            authenticationService.changePassword(request);
+            return ResponseEntity.ok("Mot de passe modifié avec succès");
+        } catch (InvalidPasswordException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le mot de passe actuel est incorrect. Veuillez réessayer.");
+        } catch (PasswordsNotMatchException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les mots de passe ne correspondent pas. Veuillez réessayer.");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite. Cela peut être dû à un problème avec le serveur. Veuillez réessayer plus tard:" + e.getMessage());
         }
     }

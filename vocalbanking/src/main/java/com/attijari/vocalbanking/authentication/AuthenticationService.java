@@ -105,29 +105,45 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
+
+
+            var user = profileRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+          
+          
+            // TODO add exception USERNOTFOUND when the profile isn't associated with a client (if it has no client it means he's an admin or superadmin)
+            if(user.getClient() == null) {
+                throw new UserNotFoundException(request.getEmail());
+            }
+
+            Client client = user.getClient();
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+//        revokeAllUserTokens(user);
+//        saveUserToken(user, jwtToken);
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
                             request.getPassword()
                     )
             );
+
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .clientId(client.getClientId())
+                    .build();
+
         } catch (AuthenticationException e) {
             // Handle authentication failure
             throw new RuntimeException("Authentication failed: " + e.getMessage());
         }
 
-        var user = profileRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-//        revokeAllUserTokens(user);
-//        saveUserToken(user, jwtToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+
+
+
     }
 
 
@@ -154,6 +170,19 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
+    public Long verifyToken(String token) {
+        boolean isTokenExpired = jwtService.isTokenExpired(token);
+        System.out.println("isTokenExpired: " + isTokenExpired);
+        String claims = jwtService.extractUsername(token);
+        System.out.println("claims: " + claims);
+        Profile profile = profileRepository.findByEmail(claims)
+                .orElseThrow(() -> new UserNotFoundException(claims));
+        if(isTokenExpired) { // throw exception if the token isn't valid
+            System.out.println("Token is expired");
+            throw new TokenExpiredException();
+        }
+        return profile.getClient().getClientId();
+    }
 
     public AuthenticationResponse refreshToken(
             HttpServletRequest request,
@@ -185,6 +214,7 @@ public class AuthenticationService {
             } // TODO: Handle EXPIRED refresh token
             return null;
         }
+
 
         public void forgotPassword(String email, String cin, String phoneNumber, Date birthday) {
             var userProfile = profileRepository.findByEmail(email)
@@ -227,6 +257,31 @@ public class AuthenticationService {
             profileRepository.save(profile);
         }
 
+    public void changePassword(ChangePasswordRequest request) {
+         String currentPassword = request.getCurrentPassword();
+         String newPassword = request.getNewPassword();
+         String confirmPassword = request.getConfirmPassword();
+         Long clientId = request.getClientId();
+
+         Profile profile = profileRepository.findByClientId(clientId);
+
+         System.out.println("profile: " + profile.getEmail());
+         if(!passwordEncoder.matches(currentPassword, profile.getPassword())) {
+             throw new InvalidPasswordException("mot de passe incorrect");
+         }
+
+        System.out.println("newwPassword" + newPassword);
+        System.out.println("confirmPassword" + confirmPassword);
+
+            if(!newPassword.equals(confirmPassword)) {
+                throw new PasswordsNotMatchException("Les mots de passe ne correspondent pas");
+            }
+
+            System.out.println("before setting new password: " + profile.getPassword());
+            profile.setPassword(passwordEncoder.encode(newPassword));
+            profileRepository.save(profile);
+            System.out.println("after setting new password: " + profile.getPassword());
     }
+}
 
 
