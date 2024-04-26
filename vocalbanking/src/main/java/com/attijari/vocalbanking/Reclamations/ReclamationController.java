@@ -37,7 +37,8 @@ public class ReclamationController {
     }
 
     @PostMapping("/reclamation/reclamationResponse")
-    public ResponseEntity<?> insertAssistantResponse(@RequestBody Reclamation reclamation) {
+    public ResponseEntity<?> insertAssistantResponse(@RequestBody InsertAssistantResponseRequest reclamation) {
+        System.out.println("reclamation clid = " + reclamation.getClientId());
         return ResponseEntity.ok(reclamationService.insertAssistantResponse(reclamation));
 
     }

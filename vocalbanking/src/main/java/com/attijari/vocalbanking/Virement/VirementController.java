@@ -106,7 +106,7 @@ public class VirementController {
                     .beneficiaireNom(virement.getBeneficiaire().getNom())
                     .build();
             return ResponseEntity.status(HttpStatus.FOUND)
-//                    .location(URI.create("your_mobile_app_url_here"))
+                    .location(URI.create("webankassistive://VerifiedTransfer/" + virement.getVir_id()))
                     .body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

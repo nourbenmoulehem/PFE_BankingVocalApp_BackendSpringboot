@@ -1,5 +1,7 @@
 package com.attijari.vocalbanking.Reclamations;
 
+import com.attijari.vocalbanking.Client.Client;
+import com.attijari.vocalbanking.Client.ClientRepository;
 import com.attijari.vocalbanking.notification.Notification;
 import com.attijari.vocalbanking.notification.NotificationRepository;
 import com.attijari.vocalbanking.notification.NotificationType;
@@ -16,6 +18,7 @@ public class ReclamationService {
 
     private final ReclamationRepository reclamationRepository;
     private final NotificationRepository notificationRepository;
+    private final ClientRepository clientRepository;
 
     LocalDate today = LocalDate.now();
     public List<Reclamation> getAllReclamations() {
@@ -29,17 +32,19 @@ public class ReclamationService {
 
 
 
-    public Object insertAssistantResponse(Reclamation reclamation) {
+    public Object insertAssistantResponse(InsertAssistantResponseRequest reclamation) {
         Optional<Reclamation> recdb = reclamationRepository.findById(reclamation.getReclamationId());
-        if (!recdb.isPresent()) {
+        Optional<Client> clientDb = clientRepository.findById(reclamation.getClientId());
+        if (!recdb.isPresent() && !clientDb.isPresent()) {
             throw new RuntimeException("Reclamation not found");
         } else {
             recdb.get().setDescriptionAssistant(reclamation.getDescriptionAssistant());
-
+            Client client = clientDb.get();
             Notification notification = Notification.builder()
                     .notif(reclamation.getDescriptionAssistant())
                     .notifDate(java.sql.Date.valueOf(today))
                     .type(NotificationType.assistant)
+                    .client(client)
                     .build();
             notificationRepository.save(notification);
 

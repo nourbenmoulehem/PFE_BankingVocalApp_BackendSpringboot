@@ -14,6 +14,7 @@ public class NotificationController {
         private final NotificationService notificationService;
         @GetMapping("/{clientId}/notifications")
         public List<Notification> getNotificationsByClientId(@PathVariable Long clientId) {
+                System.out.println("clientId = " + clientId);
                 return notificationService.getNotificationsByClientId(clientId);
         }
 }

@@ -12,4 +12,6 @@ public interface CompteBancaireRepository extends JpaRepository<CompteBancaire, 
 
     @Query("SELECT c FROM CompteBancaire c WHERE c.client.id = ?1")
     CompteBancaire findByClientID(Long clientId);
+
+    CompteBancaire findByRIB(String rib);
 }
