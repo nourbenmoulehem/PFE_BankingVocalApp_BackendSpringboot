@@ -1,7 +1,6 @@
-package com.attijari.vocalbanking.authentication;
+package com.attijari.vocalbanking.Profile;
 
 
-import com.attijari.vocalbanking.Profile.Profile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse {
-
+public class AdminAuthenticationResponse {
     @JsonProperty("access_token")
     private String accessToken;
-    @JsonProperty("refresh_token")
-    private String refreshToken;
-    @JsonProperty("client_id")
-    private Long clientId;
-
+    private String email;
+    private String role;
+    private String id;
 }
