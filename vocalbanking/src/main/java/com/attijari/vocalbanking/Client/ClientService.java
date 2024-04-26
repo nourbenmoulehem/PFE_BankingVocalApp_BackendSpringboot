@@ -105,20 +105,17 @@ public class ClientService {
             solde = client.getCompteBancaire().getSolde();
 
             name = client.getFirstName();
-            feedback = "Vous avez " + (int)soldeInt + " dinars dans votre compte, " + name + ".";
+            feedback = "Vous avez " + solde + " dinars dans votre compte, " + name + ".";
             return feedback;
         } else if(intent.equals("virement")) {
-            System.out.println("Hello I'm here ");
             feedback = handleVirementIntent(intentResponses, clientId);
             System.out.println("Feedback: " + feedback);
             return feedback;
         } else if(intent.equals("consulter_mouvements")) {
             feedback = handleConsulterVirementIntent(intentResponses, clientId, intent);
-            System.out.println("HELLOOOOOOO");
             return feedback;
         } else if(intent.equals("consulter_historique_virements")) {
             feedback = handleConsulterVirementIntent(intentResponses, clientId, intent);
-            System.out.println("HELLOOOOOOO");
             return feedback;
         }
         else {
@@ -209,7 +206,7 @@ public class ClientService {
                         feedbackBuilder.append("Montant: ").append(virement.getMontant()).append("\n");
                         feedbackBuilder.append("Motif: ").append(virement.getMotif()).append("\n");
                         feedbackBuilder.append("État: ").append(virement.getEtat()).append("\n");
-                        feedbackBuilder.append("Date operation: ").append(virement.getDateOperation()).append("\n");
+                        feedbackBuilder.append("Date opération: ").append(virement.getDateOperationInFrench()).append("\n");
                         // Add more information as needed
                         feedbackBuilder.append("\n");
                     }
@@ -218,7 +215,9 @@ public class ClientService {
                 else if(intent.equals("consulter_mouvements")) {
                     // TODO handle retrieving mouvement by last n number
                     List<Operation> operations = operationService.getLastNRows(num);
-
+                    if(operations.size() == 0) {
+                        return "Aucun mouvement trouvé.";
+                    }
                     for (Operation operation : operations) {
                         feedbackBuilder.append("mouvement avec ID: ").append(operation.getOp_id()).append("\n");
                         feedbackBuilder.append("Libellé: ").append(operation.getOp_canal()).append("\n");
@@ -249,6 +248,9 @@ public class ClientService {
                     // Use these dates to query your VirementService
                     if(intent.equals("consulter_historique_virements")) {
                         List<Virement> virements = virementService.getVirementByDates(startDate, endDate, clientId);
+                        if(virements.size() == 0) {
+                            return "Aucun virements trouvé.";
+                        }
                         for (Virement virement : virements) {
                             // Construct feedback based on virement details
                             feedbackBuilder.append(virement.getDateOperationInFrench()).append("\n");
@@ -256,7 +258,7 @@ public class ClientService {
                             feedbackBuilder.append("Montant: ").append(virement.getMontant()).append("\n");
                             feedbackBuilder.append("Motif: ").append(virement.getMotif()).append("\n");
                             feedbackBuilder.append("État: ").append(virement.getEtat()).append("\n");
-                            feedbackBuilder.append("Date operation: ").append(virement.getDateOperation()).append("\n");
+                            feedbackBuilder.append("Date opération: ").append(virement.getDateOperationInFrench()).append("\n");
                             feedbackBuilder.append("\n");
                         }
                         return feedbackBuilder.toString();
@@ -270,8 +272,8 @@ public class ClientService {
                             feedbackBuilder.append("Libellé: ").append(operation.getOp_canal()).append("\n");
                             feedbackBuilder.append("Date opération: ").append(operation.getDateOperationInFrench()).append("\n");
                             feedbackBuilder.append("Date valeur: ").append(operation.getDateValeurInFrench()).append("\n");
-                            feedbackBuilder.append("mouvement  ").append(operation.getOp_type()).append("\n");
-                            feedbackBuilder.append("montant  ").append(operation.getMontant()).append("\n");
+                            feedbackBuilder.append("mouvement:  ").append(operation.getOp_type()).append("\n");
+                            feedbackBuilder.append("montant:  ").append(operation.getMontant()).append("\n");
                             feedbackBuilder.append("\n");
                         }
                         return feedbackBuilder.toString();
