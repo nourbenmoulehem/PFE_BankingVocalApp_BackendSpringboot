@@ -6,6 +6,10 @@ import com.attijari.vocalbanking.Beneficiare.BeneficiaireService;
 import com.attijari.vocalbanking.Beneficiare.BeneficiareRepository;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaire;
 import com.attijari.vocalbanking.CompteBancaire.CompteBancaireRepository;
+import com.attijari.vocalbanking.Operation.CanalType;
+import com.attijari.vocalbanking.Operation.Operation;
+import com.attijari.vocalbanking.Operation.OperationRepository;
+import com.attijari.vocalbanking.Operation.OperationType;
 import com.attijari.vocalbanking.authentication.EmailVerificationService;
 import com.attijari.vocalbanking.exceptions.InsufficientBalanceException;
 
@@ -27,6 +31,7 @@ public class VirementService {
     private final BeneficiaireService beneficiareService;
     private final EmailVerificationService emailVerificationService;
     private final BeneficiareRepository beneficiaireRepository;
+    private final OperationRepository operationRepository;
     private final Logger logger = LoggerFactory.getLogger(VirementService.class);
 
     public CompteBancaire insertVirementsToCompteBancaire(Long idCompteBancaire, List<Virement> virements) {
@@ -152,8 +157,6 @@ public class VirementService {
 
         // Save the Virement
         virement = virementRepository.save(virement);
-        // TODO : save as opration
-        // TODO : update solde beneficiarre if it exists
         logger.info("Transfer initiated successfully, sending verification email...");
         // Send the verification email
         emailVerificationService.sendVerifyTransferEmail(virement, compteBancaire.getClient());
@@ -164,12 +167,30 @@ public class VirementService {
     public Virement verifyTransfer(Long virementId) {
         // Retrieve the virement
         Virement virement = virementRepository.findById(virementId).orElseThrow(() -> new NoSuchElementException("Virement not found"));
-
+        Operation operation =  Operation.builder()
+                .date_operation(virement.getDateOperation())
+                .date_valeur(virement.getDateValeur())
+                .montant(virement.getMontant())
+                .op_canal(CanalType.Virement_emis)
+                .op_type(OperationType.Credit)
+                .op_emplacement(virement.getBank())
+                .op_marchant("application")
+                .compteBancaire(virement.getCompteBancaire())
+                .build();
+        operationRepository.save(operation);
         // Update the solde in the CompteBancaire
         CompteBancaire compteBancaire = virement.getCompteBancaire();
         compteBancaire.setSolde(compteBancaire.getSolde() - virement.getMontant());
         compteBancaireRepository.save(compteBancaire);
 
+        // TODO : update solde beneficiarre if it exists
+        String beneficiaireRIB = virement.getBeneficiaire().getRib();
+        // find compte bancaire by rub
+        CompteBancaire beneficiaireCompte = compteBancaireRepository.findByRIB(beneficiaireRIB);
+        if(beneficiaireCompte != null){
+            beneficiaireCompte.setSolde(beneficiaireCompte.getSolde() + virement.getMontant());
+            compteBancaireRepository.save(beneficiaireCompte);
+        }
         // Update the virement status
         virement.setEtat(EtatVirement.exécuté);
         virementRepository.save(virement);
