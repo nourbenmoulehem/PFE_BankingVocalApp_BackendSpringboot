@@ -172,7 +172,7 @@ public class VirementService {
                 .date_valeur(virement.getDateValeur())
                 .montant(virement.getMontant())
                 .op_canal(CanalType.Virement_emis)
-                .op_type(OperationType.Credit)
+                .op_type(OperationType.Debit)
                 .op_emplacement(virement.getBank())
                 .op_marchant("application")
                 .compteBancaire(virement.getCompteBancaire())
