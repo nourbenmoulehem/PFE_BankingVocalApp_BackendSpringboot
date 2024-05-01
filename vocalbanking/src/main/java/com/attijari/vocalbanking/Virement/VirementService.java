@@ -14,12 +14,14 @@ import com.attijari.vocalbanking.authentication.EmailVerificationService;
 import com.attijari.vocalbanking.exceptions.InsufficientBalanceException;
 
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
+import com.attijari.vocalbanking.notification.Notification;
+import com.attijari.vocalbanking.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import com.attijari.vocalbanking.notification.NotificationType;
 
 import java.util.*;
 
@@ -32,6 +34,7 @@ public class VirementService {
     private final EmailVerificationService emailVerificationService;
     private final BeneficiareRepository beneficiaireRepository;
     private final OperationRepository operationRepository;
+    private final NotificationRepository notificationRepository;
     private final Logger logger = LoggerFactory.getLogger(VirementService.class);
 
     public CompteBancaire insertVirementsToCompteBancaire(Long idCompteBancaire, List<Virement> virements) {
@@ -190,7 +193,35 @@ public class VirementService {
         if(beneficiaireCompte != null){
             beneficiaireCompte.setSolde(beneficiaireCompte.getSolde() + virement.getMontant());
             compteBancaireRepository.save(beneficiaireCompte);
+            //new : saved operation for benificiaire
+            Operation operationReciever =  Operation.builder()
+                    .date_operation(virement.getDateOperation())
+                    .date_valeur(virement.getDateValeur())
+                    .montant(virement.getMontant())
+                    .op_canal(CanalType.Virement_reçu)
+                    .op_type(OperationType.Credit)
+                    .op_emplacement(virement.getBank())
+                    .op_marchant("application")
+                    .compteBancaire(beneficiaireCompte)
+                    .build();
+            operationRepository.save(operationReciever);
+            //new : notification builiding for beneficiaire
+            Notification notificationBenef = Notification.builder()
+                    .notif("Vous avez reçu un virement de " + virement.getMontant() + " de la part de " + virement.getCompteBancaire().getClient().getFirstName())
+                    .notifDate(new Date())
+                    .type(NotificationType.virement)
+                    .client(beneficiaireCompte.getClient())
+                    .build();
+            notificationRepository.save(notificationBenef);
         }
+        // Create a new notification for client
+        Notification notification = Notification.builder()
+                .notif("Vous avez envoyer un virement de " + virement.getMontant() + " a " + virement.getBeneficiaire().getNom())
+                .notifDate(new Date())
+                .type(NotificationType.virement)
+                .client(virement.getCompteBancaire().getClient())
+                .build();
+        notificationRepository.save(notification);
         // Update the virement status
         virement.setEtat(EtatVirement.exécuté);
         virementRepository.save(virement);
