@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final LogoutHandler logoutHandler;
     private final AuthenticationProvider authenticationProvider;
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**", "/api/v1/client/**", "/api/v1/operation/**", "/api/v1/intent/**",
-
+            "/api/v1/carte/**"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
