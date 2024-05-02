@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,5 +63,32 @@ public class OperationService {
         int idCompteBancaire = compteBancaire.getId_compteBancaire();
         return operationRepository.findOperationsBetweenDatesAndByCompteBancaireId(startDate, endDate, idCompteBancaire);
 
+    }
+
+    public float getSumMontantlastMonth( Long clientId) {
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+        int idCompteBancaire = compteBancaire.getId_compteBancaire();
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date sDate = cal.getTime();
+
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date eDate = cal.getTime();
+
+        Float sum = operationRepository.sumMontantbyMonth(sDate, eDate, idCompteBancaire);
+        return sum != null ? sum : 0.0f;
+    }
+    public float getSumMontantCurrentMonth(Long clientId) {
+        CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
+        int idCompteBancaire = compteBancaire.getId_compteBancaire();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date sDate = cal.getTime();
+
+        Date eDate = Calendar.getInstance().getTime();
+
+        Float sum = operationRepository.sumMontantbyMonth(sDate, eDate, idCompteBancaire);
+        return sum != null ? sum : 0.0f;
     }
 }

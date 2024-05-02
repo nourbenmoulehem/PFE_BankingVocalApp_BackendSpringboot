@@ -4,6 +4,8 @@ package com.attijari.vocalbanking.Operation;
 
 import com.attijari.vocalbanking.exceptions.InvalidDatesException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,33 @@ public class OperationController {
             List<Operation> operations = operationService.getOperationByDates(startDate, endDate, clientId);
             return ResponseEntity.ok(operations);
         } catch (InvalidDatesException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    private static final Logger logger = LoggerFactory.getLogger(OperationController.class);
+
+    @GetMapping("/getLastMonthExpenses/{id}")
+    public ResponseEntity<?> getLastMonthExpenses(@PathVariable Long id) {
+        try {
+            logger.info("Received request to get last month expenses. id: {}", id);
+            ResponseEntity<?> response = ResponseEntity.ok(operationService.getSumMontantlastMonth(id));
+            logger.info("Last month expenses retrieved successfully. id: {}", id);
+            return response;
+        } catch (Exception e) {
+            logger.error("Error occurred while retrieving last month expenses. id: {}, error: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getCurrentMonthExpenses/{id}")
+    public ResponseEntity<?> getCurrentMonthExpenses(@PathVariable Long id) {
+        try {
+            logger.info("Received request to get current month expenses. id: {}", id);
+            ResponseEntity<?> response = ResponseEntity.ok(operationService.getSumMontantCurrentMonth(id));
+            logger.info("Current month expenses retrieved successfully. id: {}", id);
+            return response;
+        } catch (Exception e) {
+            logger.error("Error occurred while retrieving current month expenses. id: {}, error: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

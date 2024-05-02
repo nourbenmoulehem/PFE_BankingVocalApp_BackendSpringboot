@@ -19,4 +19,7 @@ public interface OperationRepository extends JpaRepository<Operation, Integer> {
 
     @Query("SELECT v FROM Operation v WHERE v.compteBancaire = ?1")
     List<Operation> findByCompteBancaire(CompteBancaire compteBancaire);
+
+    @Query("SELECT SUM(v.montant) FROM Operation v WHERE v.op_type = 'Debit' AND v.date_operation BETWEEN :startDate AND :endDate AND v.compteBancaire.id_compteBancaire = :idCompteBancaire")
+    Float sumMontantbyMonth(Date startDate, Date endDate, int idCompteBancaire);
 }
