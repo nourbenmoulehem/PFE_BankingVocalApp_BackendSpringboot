@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/carte")
 @RequiredArgsConstructor
@@ -15,7 +17,8 @@ public class CarteController {
     private static final Logger logger = LoggerFactory.getLogger(CarteController.class);
 
     @PutMapping("/status/{id_produit}")
-    public ResponseEntity<Carte> updateCarteStatus(@PathVariable int id_produit, @RequestBody String newStatus) {
+    public ResponseEntity<Carte> updateCarteStatus(@PathVariable int id_produit,  @RequestBody Map<String, String> body) {
+        String newStatus = body.get("status");
         logger.info("Received request to update carte status. id_produit: {}, newStatus: {}", id_produit, newStatus);
         Carte updatedCarte = carteService.updateCarteStatus(id_produit, newStatus);
         if (updatedCarte == null) {
