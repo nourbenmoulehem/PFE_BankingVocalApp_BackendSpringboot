@@ -36,7 +36,7 @@ public class ReclamationService {
         Optional<Reclamation> recdb = reclamationRepository.findById(reclamation.getReclamationId());
         Optional<Client> clientDb = clientRepository.findById(reclamation.getClientId());
         if (!recdb.isPresent() && !clientDb.isPresent()) {
-            throw new RuntimeException("Reclamation not found");
+            throw new RuntimeException("Reclamation introuvable ou client introuvable");
         } else {
             recdb.get().setDescriptionAssistant(reclamation.getDescriptionAssistant());
             Client client = clientDb.get();
@@ -55,6 +55,6 @@ public class ReclamationService {
 
     public String deleteReclamation(Long id) {
         reclamationRepository.deleteById(id);
-        return "Reclamation deleted";
+        return "Reclamation suprimée avec succès";
     }
 }

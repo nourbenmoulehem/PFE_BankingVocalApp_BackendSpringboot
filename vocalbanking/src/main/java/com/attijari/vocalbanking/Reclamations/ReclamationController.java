@@ -24,7 +24,7 @@ public class ReclamationController {
     public ResponseEntity<?> addReclamationByID(@PathVariable Long clientId, @RequestBody Reclamation reclamation) {
         Client client = clientService.getClientById(clientId);
         if (client == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client introuvable");
         }
         reclamation.setClient(client);
         return ResponseEntity.ok(reclamationService.addReclamation(reclamation));

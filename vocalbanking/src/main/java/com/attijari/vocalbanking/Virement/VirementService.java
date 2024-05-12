@@ -55,7 +55,7 @@ public class VirementService {
             compteBancaireRepository.save(compteBancaire);
             return compteBancaire;
         } else {
-            throw new RuntimeException("Compte bancaire not found");
+            throw new RuntimeException("Compte bancaire introuvable");
         }
 
 
@@ -75,7 +75,7 @@ public class VirementService {
 
     public List<Virement> getVirementByDates(Date startDate, Date endDate, Long clientId) {
         if (startDate.after(endDate)) {
-            throw new InvalidDatesException("Start date must be before end date");
+            throw new InvalidDatesException("Date de début doit être avant la date de fin");
         }
         CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
         int idCompteBancaire = compteBancaire.getId_compteBancaire();
@@ -164,7 +164,7 @@ public class VirementService {
         // Send the verification email
         emailVerificationService.sendVerifyTransferEmail(virement, compteBancaire.getClient());
         logger.info("Verification email sent successfully");
-        return "Transfer initiated successfully";
+        return "Virement initiee avec succes, veuillez verifier votre email pour confirmer le virement";
     }
 
     public Virement verifyTransfer(Long virementId) {

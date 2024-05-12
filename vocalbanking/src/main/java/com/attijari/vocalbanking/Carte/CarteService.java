@@ -12,7 +12,7 @@ public class CarteService {
     public Carte updateCarteStatus(int id_produit, String newStatus) {
         Carte carte = carteRepository.findByIdProduit(id_produit);
         if (carte == null) {
-            throw new IllegalArgumentException("Invalid carte Id:" + id_produit);
+            throw new IllegalArgumentException("Carte Id invalide:" + id_produit);
         }
         carte.setStatus(newStatus);
         return carteRepository.save(carte);

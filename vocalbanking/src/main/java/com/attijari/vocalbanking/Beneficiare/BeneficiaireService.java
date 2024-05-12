@@ -31,7 +31,7 @@ public class BeneficiaireService {
             clientRepository.save(client);
             return client;
         } else {
-            throw new RuntimeException("Error while saving beneficiaires.");
+            throw new RuntimeException("erreur lors de l'insertion des beneficiaires");
         }
     }
 

@@ -50,7 +50,7 @@ public class BeneficiaireController {
                     .rib(beneficiaireRequest.getRib())
                     .build();
             beneficiaireService.saveBeneficiaire(beneficiaire, id_client);
-            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire inserted successfully"));
+            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire ajouté avec succès"));
         }
         catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -64,7 +64,7 @@ public class BeneficiaireController {
         try {
             System.out.println("id_client = " + id_client);
             beneficiaireService.deleteBeneficiaire(beneficiaire, id_client);
-            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire deleted successfully"));
+            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire supprimé avec succès"));
         } catch (Exception e) {
             System.out.println("Erreur: " + e.getMessage());
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
@@ -77,7 +77,7 @@ public class BeneficiaireController {
         try {
                     System.out.println("id_client = " + id_client);
             beneficiaireService.updateBeneficiaire(beneficiaire, id_client);
-            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire updated successfully"));
+            return ResponseEntity.ok().body(Map.of("message", "Beneficiaire modifié avec succès"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
         }

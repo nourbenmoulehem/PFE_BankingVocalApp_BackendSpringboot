@@ -34,7 +34,7 @@ public class OperationService {
             compteBancaireRepository.save(compteBancaire);
             return compteBancaire;
         } else {
-            throw new RuntimeException("Compte bancaire not found");
+            throw new RuntimeException("Compte bancaire introuvable");
         }
 
     }
@@ -57,7 +57,7 @@ public class OperationService {
 
     public List<Operation> getOperationByDates(Date startDate, Date endDate, Long clientId) {
         if (startDate.after(endDate)) {
-            throw new InvalidDatesException("Start date must be before end date");
+            throw new InvalidDatesException("Date de debut doit etre inferieur a la date de fin");
         }
         CompteBancaire compteBancaire = compteBancaireRepository.findByClientID(clientId);
         int idCompteBancaire = compteBancaire.getId_compteBancaire();

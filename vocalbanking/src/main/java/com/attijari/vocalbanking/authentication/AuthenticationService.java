@@ -136,7 +136,7 @@ public class AuthenticationService {
 
         } catch (AuthenticationException e) {
             // Handle authentication failure
-            throw new RuntimeException("Authentication failed: " + e.getMessage());
+            throw new RuntimeException("Authentification echouee: " + e.getMessage());
         }
 
 
@@ -267,7 +267,7 @@ public class AuthenticationService {
 
          System.out.println("profile: " + profile.getEmail());
          if(!passwordEncoder.matches(currentPassword, profile.getPassword())) {
-             throw new InvalidPasswordException("mot de passe incorrect");
+             throw new InvalidPasswordException("mot de passe incorrecte");
          }
 
         System.out.println("newwPassword" + newPassword);
