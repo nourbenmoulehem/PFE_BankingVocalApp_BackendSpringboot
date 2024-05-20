@@ -17,7 +17,7 @@ public class CarteController {
     private static final Logger logger = LoggerFactory.getLogger(CarteController.class);
 
     @PutMapping("/status/{id_produit}")
-    public ResponseEntity<Carte> updateCarteStatus(@PathVariable int id_produit,  @RequestBody Map<String, String> body) {
+    public ResponseEntity<Carte> updateCarteStatus(@PathVariable Long id_produit,  @RequestBody Map<String, String> body) {
         String newStatus = body.get("status");
         logger.info("Received request to update carte status. id_produit: {}, newStatus: {}", id_produit, newStatus);
         Carte updatedCarte = carteService.updateCarteStatus(id_produit, newStatus);
