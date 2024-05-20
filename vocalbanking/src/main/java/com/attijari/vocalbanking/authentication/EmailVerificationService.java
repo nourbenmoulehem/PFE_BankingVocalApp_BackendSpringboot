@@ -38,7 +38,8 @@ public class EmailVerificationService {
     private final JwtService jwtService;
   
   
-    private String ip = "192.168.1.101";
+
+    private String ip = "192.168.239.48";
 
 
     public void sendVerificationEmail(Profile user) {
